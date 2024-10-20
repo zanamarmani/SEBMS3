@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consumer Dashboard</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f4f6f9;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: #000000;
+        }
+
+        h2 {
+            font-size: 1.75rem;
+            margin-top: 2rem;
+            color: #333;
+        }
+
+        a {
+            color: #000000;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .profile-section, .bill-history-section, .payment-history-section {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .profile-section p, .bill-history-section p {
+            font-size: 1rem;
+            margin: 10px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #c6cacd;
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Welcome, {{ consumer.name }}</h1>
+
+    <!-- Consumer Profile Section -->
+    <div class="profile-section">
+        <h2>Profile Information</h2>
+        <a href="{% url 'consumer:show_profile'%}">Show Profile</a>
+        <p><strong>Consumer Number:</strong> {{ consumer.consumer_number }}</p>
+        <p><strong>Meter Number:</strong> {{ consumer.meter_number }}</p>
+        <p><strong>Area Number:</strong> {{ consumer.area_number }}</p>
+        <p><strong>Tariff:</strong> {{ consumer.tariff }}</p>
+        <p><strong>Approval Status:</strong> {{ consumer.approved }}</p>
+        <a href="{% url 'consumer:show_bills'%}">Show Bill</a>
+    </div>
+
+    <!-- Bill History Section -->
+
+    <div class="bill-history-section">
+        <h2>Your Bills</h2>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Consumer Number</th>
+                        <th>Amount Due</th>
+                        <th>Bill Due Date</th>
+                        <th>Month</th>
+                        <th>Consumed Units</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for bill in bills %}
+                    <tr>
+                        <td>{{ bill.id }}</td>
+                        <td>{{ bill.consumer.consumer_number }}</td>
+                        <td>{{ bill.amount_due }} PKR</td>
+                        <td>{{ bill.due_date|date:"M d, Y" }}</td>
+                        <td>{{ bill.month|date:"M" }}</td>
+                        <td>{{ bill.consumed_units }}</td>
+                        <td>
+                            {% if bill.paid %}
+                                Paid
+                            {% else %}
+                                Not Paid
+                            {% endif %}
+                        </td>
+                        <td>
+                            <form action="{% url 'consumer:payment_gateway' bill.id %}" method="POST">
+                                {% csrf_token %}
+                                <button type="submit">Pay Now</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <h2>Your Bills</h2>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Consumer Number</th>
+                <th>Amount Due</th>
+                <th>Bill Due Date</th>
+                <th>Month</th>
+                <th>Consumed Units</th>
+                <th>status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if bills %}
+            <tr>
+                <td>{{ bill.id }}</td>
+                <td>{{ bill.consumer.consumer_number }}</td>
+                <td>{{ bill.amount_due }} PKR</td>
+                <td>{{ bill.due_date|date:"M d, Y" }}</td>
+                <td>{{ bill.month|date:"M" }}</td>
+                <td>{{ bill.consumed_units }}</td>
+                <td>
+                    {% if bill.paid %}
+                        Paid
+                    {% else %}
+                        Not Paid
+                    {% endif %}
+                </td>
+                
+                <td>
+                    <!-- Payment Form for each bill -->
+                    {% comment %} <form action="{% url 'consumer:payment_gateway' bill.id %}" method="POST">
+                        {% csrf_token %}
+                        <button type="submit">Pay Now</button>
+                    </form> {% endcomment %}
+                </td>
+            </tr>
+            {% endif %}
+        </tbody>
+    </table>
+
+
+    <!-- Payment History Section -->
+    <div class="payment-history-section">
+        <h2>Payment History</h2>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Amount Paid</th>
+                        <th>Payment Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for payment in payments %}
+                    <tr>
+                        <td>{{ payment.amount_paid }}</td>
+                        <td>{{ payment.payment_date }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

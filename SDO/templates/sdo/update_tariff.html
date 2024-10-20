@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tariff Management</title>
+    <style>
+      /* General Styling */
+      @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap");
+
+      body {
+        font-family: "Poppins", sans-serif;
+        background-color: #eef2f7;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-height: 100vh;
+      }
+
+      /* Form Container */
+      .form-container {
+        background-color: #ffffffc9;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        width: 400px;
+        text-align: center;
+        margin: 40px 0;
+      }
+
+      /* Header */
+      h1, h2 {
+        font-size: 26px;
+        margin-bottom: 25px;
+        color: #333;
+        text-align: center;
+      }
+
+      /* Form Input Fields */
+      label {
+        display: block;
+        text-align: left;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: #555;
+      }
+
+      input[type="text"],
+      input[type="number"],
+      select {
+        width: 100%;
+        padding: 12px;
+        margin-bottom: 20px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        box-sizing: border-box;
+        font-size: 16px;
+        transition: border-color 0.3s ease;
+      }
+
+      input[type="text"]:focus,
+      input[type="number"]:focus,
+      select:focus {
+        border-color: #4caf50;
+        outline: none;
+      }
+
+      /* Submit and Action Buttons */
+      button, input[type="submit"] {
+        background-color: #4caf50;
+        color: white;
+        padding: 12px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        width: 100%;
+        font-size: 16px;
+        font-weight: 600;
+        transition: background-color 0.3s ease;
+        margin-top: 10px;
+      }
+
+      button:hover, input[type="submit"]:hover {
+        background-color: #3e8e41;
+      }
+
+      button[name="delete"] {
+        background-color: #8e8a8a;
+        margin-top: 15px;
+      }
+
+      button[name="delete"]:hover {
+        background-color: #c0392b;
+      }
+
+      /* Table Styling */
+      table {
+        width: 90%;
+        border-collapse: collapse;
+        margin-top: 20px auto;
+        background-color: #fff;
+        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      th, td {
+        padding: 12px 15px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+      }
+
+      th {
+        background-color: #4caf50;
+        color: white;
+        font-weight: 600;
+      }
+
+      td {
+        color: #555;
+      }
+
+      a {
+        text-decoration: none;
+        color: #4caf50;
+        font-weight: bold;
+      }
+
+      a:hover {
+        text-decoration: underline;
+      }
+      .test-message {
+            margin-top: 15px;
+            margin-bottom: 15px;
+            color: #666;
+            font-size: 14px;
+            text-align: center;
+        }
+      /* Responsive */
+      @media (max-width: 600px) {
+        .form-container, table {
+          width: 100%;
+          padding: 20px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="form-container">
+      <h1>{% if tariff %}Update{% else %}Create{% endif %} Tariff</h1>
+      <div class="test-message">
+        Choose the type of tariff you want to update 
+   </div>
+      <form method="post">
+        {% csrf_token %}
+        
+        <label for="tariff_type">Tariff Type:</label>
+        {{form.tariff_type}}
+        
+        <label for="price_100">Price for 100 Units:</label>
+        {{form.price_100}}        
+        <label for="price_200">Price for 100-200 Units:</label>
+        {{form.price_200}}        
+        <label for="price_300">Price for 200-300 Units:</label>
+        {{form.price_300}}        
+        <label for="price_above">Price for Above 300 Units:</label>
+        {{form.price_above}}        
+        <button type="submit">{% if tariff %}Update{% else %}Create{% endif %}</button>
+
+      </form>
+    </div>
+  </div>
+     <footer class="app-footer">
+		    <div class="container text-center py-3">
+            <small class="copyright"> Copyright :All rights are reserved  <span class="sr-only"></span><i class="fas fa-heart" style="color: #fb866a;"></i> by <a class="app-link" href="http://themes.3rdwavemedia.com" target="_blank"> SEBMS</a> </small>
+		       
+		    </div>
+	    </footer>
+  </body>
+</html>

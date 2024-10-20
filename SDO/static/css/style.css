@@ -1,0 +1,65 @@
+/* .btn-approve {
+    background-color: #36a95e;
+    color: rgb(255, 253, 253);
+    border-radius: 5px;
+    padding: 1px 8px;
+    border: 0.2px solid #2fa056;
+  }
+
+  .btn-approve:hover {
+    background-color:#1b9445;
+  } */
+
+  /* .btn-reject {
+    background-color: #a10f0f;
+    color: white;
+    border-radius: 5px;
+    padding: 0 15px;
+  }
+
+  .btn-reject:hover {
+    background-color: #ca1913;
+  } */
+  /* .action-buttons button {
+    margin-right: 5px;
+  } */
+  /* .nav-link.active {
+    font-weight: bold;
+    color: red;
+} */
+
+.progress-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+.progress-container .title {
+  flex: 1;
+}
+.progress-container .progress {
+  flex: 2;
+  margin: 0 10px;
+}
+.progress-container .action {
+  flex: 0.1;
+}
+/* /////////////////////////////////// */
+/* hover effects for cards */
+
+.card-effect {
+    transition: transform 0.5s, box-shadow 0.5s;
+}
+
+.card-effect:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+}
+
+.app-card-link-mask {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+}

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Existing Reading</title>
+</head>
+<body>
+    <h1>Existing Meter Reading</h1>
+    <p>Meter Number: {{ existing_reading.meter_number }}</p>
+    <p>Last Reading: {{ existing_reading.last_reading }}</p>
+    <p>New Reading: {{ existing_reading.new_reading }}</p>
+    <p>Reading Date: {{ existing_reading.reading_date }}</p>
+
+    <form action="{% url 'delete_reading' existing_reading.id %}" method="post">
+        {% csrf_token %}
+        <button type="submit">Delete Reading and Enter New</button>
+    </form>
+
+    <h2>Enter New Reading</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Submit New Reading</button>
+    </form>
+</body>
+</html>

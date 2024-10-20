@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Generate Bill</title>
+</head>
+<body>
+    <h1>Generate Bill for {{ consumer.user.username }}</h1>
+
+    {% if bill %}
+        <p><strong>Month:</strong> {{ bill.month }}</p>
+        <p><strong>Consumed Units:</strong> {{ bill.consumed_units }}</p>
+        <p><strong>Amount Due:</strong> {{ bill.amount_due }}</p>
+        <p><strong>Paid:</strong> {{ bill.paid }}</p>
+    {% else %}
+        <p>No bill generated.</p>
+    {% endif %}
+
+    <a href="{% url 'submit_reading' %}">Back to Submit Reading</a>
+</body>
+</html>
+

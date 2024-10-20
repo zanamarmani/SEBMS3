@@ -1,0 +1,27 @@
+<!-- base.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{% block title %}
+        
+        {% endblock %}</title>
+</head>
+<body>
+    <!-- Include the header block -->
+    <header>
+        {% block header %}
+            {% include 'sdo/header.html' %}
+        {% endblock %}
+    </header>
+    <!-- Main content area -->
+        {% block content %}
+        {% endblock %}
+    
+    {% block footer %}
+        {% include "sdo/footer.html" %}
+    {% endblock %}
+
+    
+        
+</body>
+</html>

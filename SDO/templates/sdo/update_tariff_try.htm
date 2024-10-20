@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Register Consumer</title>
+    <style>
+      /* General Styling */
+      @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap");
+
+      body {
+        font-family: "Poppins", sans-serif;
+        background-color: #eef2f7;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+      }
+
+      /* Form Container */
+      .form-container {
+        background-color: #ffffffc9;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        width: 400px;
+        text-align: center;
+        margin: 40px 0; /* Adding some space from top and bottom */
+      }
+
+      /* Header */
+      h1 {
+        font-size: 26px;
+        margin-bottom: 25px;
+        color: #333;
+      }
+
+      /* Form Input Fields */
+      label {
+        display: block;
+        text-align: left;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: #555;
+      }
+
+      input[type="text"],
+      input[type="password"],
+      select {
+        width: 100%;
+        padding: 12px;
+        margin-bottom: 20px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        box-sizing: border-box;
+        font-size: 16px;
+        transition: border-color 0.3s ease;
+      }
+
+      input[type="text"]:focus,
+      input[type="password"]:focus,
+      select:focus {
+        border-color: #4caf50;
+        outline: none;
+      }
+
+      /* Submit Button */
+      input[type="submit"] {
+        background-color: #4caf50;
+        color: white;
+        padding: 12px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        width: 100%;
+        font-size: 16px;
+        font-weight: 600;
+        transition: background-color 0.3s ease;
+      }
+
+      input[type="submit"]:hover {
+        background-color: #3e8e41;
+      }
+
+      /* Error Messages */
+      .error-messages {
+        color: red;
+        font-size: 14px;
+        margin-bottom: 20px;
+      }
+
+      ul {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      li {
+        margin-bottom: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="form-container">
+      <form method="post">
+        {% csrf_token %}
+        
+        <!-- Tariff Type (dropdown or text input) -->
+        <label for="tariff_type">Tariff Type:</label>
+        <input type="text" name="tariff_type" id="tariff_type" value="{{ tariff.tariff_type }}">
+        
+        <!-- Price for first 100 units -->
+        <label for="price_100">Price for first 100 units:</label>
+        <input type="number" step="0.01" name="price_100" id="price_100" value="{{ tariff.price_100 }}">
+        
+        <!-- Price for 100-200 units -->
+        <label for="price_200">Price for 100-200 units:</label>
+        <input type="number" step="0.01" name="price_200" id="price_200" value="{{ tariff.price_200 }}">
+        
+        <!-- Price for 200-300 units -->
+        <label for="price_300">Price for 200-300 units:</label>
+        <input type="number" step="0.01" name="price_300" id="price_300" value="{{ tariff.price_300 }}">
+        
+        <!-- Price for units above 300 -->
+        <label for="price_above">Price for units above 300:</label>
+        <input type="number" step="0.01" name="price_above" id="price_above" value="{{ tariff.price_above }}">
+      
+        <!-- Button to update the tariff -->
+        <button type="submit">Update Tariff</button>
+      
+        <!-- Button to delete the tariff -->
+        <button type="submit" name="delete" value="delete">Delete Tariff</button>
+      </form>
+      
+    </div>
+  </body>
+</html>
+<h2>All Existing Tariffs</h2>
+<table>
+    <thead>
+        <tr>
+            <th>Tariff Type</th>
+            <th>Price for 100 Units</th>
+            <th>Price for 100-200 Units</th>
+            <th>Price for 200-300 Units</th>
+            <th>Price for Above 300 Units</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for tariff in all_tariffs %}
+        <tr>
+            <td>{{ tariff.get_tariff_type_display }}</td>
+            <td>{{ tariff.price_100 }}</td>
+            <td>{{ tariff.price_200 }}</td>
+            <td>{{ tariff.price_300 }}</td>
+            <td>{{ tariff.price_above }}</td>
+            <td>
+                <a href="{% url 'SDO:update_tariff' tariff.id %}">Edit</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<h2>{% if tariff %}Update{% else %}Create{% endif %} Tariff</h2>
+<form method="post">
+    {% csrf_token %}
+    <label for="tariff_type">Tariff Type:</label>
+    <select name="tariff_type" required>
+        <option value="">Select Tariff Type</option>
+        {% for code, name in tariff_choices %}
+        <option value="{{ code }}" {% if tariff and tariff.tariff_type == code %}selected{% endif %}>{{ name }}</option>
+        {% endfor %}
+    </select>
+    
+    <label for="price_100">Price for 100 Units:</label>
+    <input type="number" step="0.01" name="price_100" value="{% if tariff %}{{ tariff.price_100 }}{% endif %}" required>
+    
+    <label for="price_200">Price for 100-200 Units:</label>
+    <input type="number" step="0.01" name="price_200" value="{% if tariff %}{{ tariff.price_200 }}{% endif %}" required>
+    
+    <label for="price_300">Price for 200-300 Units:</label>
+    <input type="number" step="0.01" name="price_300" value="{% if tariff %}{{ tariff.price_300 }}{% endif %}" required>
+    
+    <label for="price_above">Price for Above 300 Units:</label>
+    <input type="number" step="0.01" name="price_above" value="{% if tariff %}{{ tariff.price_above }}{% endif %}" required>
+    
+    <button type="submit">{% if tariff %}Update{% else %}Create{% endif %}</button>
+</form>

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SDO</title>
+</head>
+<body>
+    <h1>Welcom to SDO Dashboard</h1>
+    {% if messages %}
+    <ul>
+      {% for message in messages %}
+      <li>{{ message }}</li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+    <a href="{% url 'SDO:create_office_staff' %}">Create Office Staff</a>
+    <div class="sidebar">
+      <h2>Admin Dashboard</h2>
+      <a href="{% url 'SDO:admin_dashboard' %}">Dashboard</a>
+      <br>
+      <a href="{% url 'SDO:approve_new_consumers' %}">Approve New Consumers</a>
+      <br>
+      <div class="submenu">
+          <a href="{% url 'SDO:add_user' %}">Add User</a>
+          <br>
+          <a href="{% url 'SDO:show_all_users' %}">Show All Users</a>
+      </div>
+      <br>
+      <a href="{% url 'SDO:show_all_consumers' %}">Show All Consumers</a>
+      <br>
+      <a href="{% url 'SDO:update_tariff' %}">Update Tariff</a>
+  </div>
+</body>
+</html>

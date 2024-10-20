@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Create Office Staff</title>
+  </head>
+  <body>
+    <h1>Create New Office Staff</h1>
+
+    <!-- Form to create a new office staff -->
+    <form method="POST" action="{% url 'SDO:create_office_staff' %}">
+      {% csrf_token %}
+      <label for="reference_number">Reference Number (Auto-generated):</label
+      ><br />
+      <!-- Reference number is auto-generated, so it doesn't need a form input -->
+      <label for="password">Password (Auto-generated):</label><br />
+      <!-- Password is auto-generated as 'officestaff', so no input here either -->
+
+      <button type="submit">Create Office Staff</button>
+    </form>
+
+    <!-- Provide a back link to return to the dashboard -->
+    <a href="{% url 'SDO:dashboard' %}">Back to Dashboard</a>
+  </body>
+</html>

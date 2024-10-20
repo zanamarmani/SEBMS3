@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create SDO Profile</title>
+    <style>
+        .form-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 80vh; /* Ensures it's centered vertically */
+        }
+    
+        form {
+            width: 35%; /* Adjust width as needed */
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            display: flex; /* Use flexbox for form layout */
+            flex-direction: column; /* Stack elements vertically */
+            align-items: center; /* Center the content */
+        }
+    
+        h1 {
+            text-align: center;
+            font-family: 'Arial', sans-serif;
+            color: #333;
+            margin-bottom: 20px; /* Added margin below heading */
+        }
+
+        /* Labels for input fields */
+        label {
+            display: block; /* Makes labels block elements */
+            text-align: left; /* Aligns text to the left */
+            margin: 10px 0 5px; /* Space above and below */
+            font-size: 16px;
+            color: #212020;
+            width: 85%; /* Ensure labels take full width */
+        }
+    
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        textarea,
+        select {
+            width: 80%; /* Set input width to 65% */
+            padding: 10px;
+            margin-bottom: 15px; /* Space below input fields */
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            /* text-align: center; Center text inside input fields */
+        }
+    
+        input:focus {
+            outline: none;
+            border-color: #28a745;
+            box-shadow: 0 0 5px rgba(40, 167, 69, 0.5);
+        }
+    
+        .submit-btn {
+            display: inline-block;
+            width: 85%; /* Set button width to 65% */
+            padding: 10px;
+            background-color: #28a745;
+            color: white;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-top: 10px; /* Added space above the button */
+        }
+    
+        .submit-btn:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h1>Create SDO Profile</h1>
+        <form method="POST">
+            {% csrf_token %}
+            
+            <!-- Insert labels and inputs here -->
+            {% for field in form %}
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}  <!-- Renders the field -->
+            {% endfor %}
+            
+            <button type="submit" class="submit-btn">Create Profile</button>
+        </form>
+    </div>
+</body>
+</html>

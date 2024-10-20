@@ -1,0 +1,4 @@
+firebase_credentials/serviceAccountKey.json
+*.pyc
+__pycache__/
+

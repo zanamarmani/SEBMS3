@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Register Consumer</title>
+    <style>
+      /* General Styling */
+      @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap");
+
+      body {
+        font-family: "Poppins", sans-serif;
+        background-color: #eef2f7;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+      }
+
+      /* Form Container */
+      .form-container {
+        background-color: #ffffffc9;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        width: 400px;
+        text-align: center;
+        margin: 40px 0; /* Adding some space from top and bottom */
+      }
+
+      /* Header */
+      h1 {
+        font-size: 26px;
+        margin-bottom: 25px;
+        color: #333;
+      }
+
+      /* Form Input Fields */
+      label {
+        display: block;
+        text-align: left;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: #555;
+      }
+
+      input[type="text"],
+      input[type="password"],
+      select {
+        width: 100%;
+        padding: 12px;
+        margin-bottom: 20px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        box-sizing: border-box;
+        font-size: 16px;
+        transition: border-color 0.3s ease;
+      }
+
+      input[type="text"]:focus,
+      input[type="password"]:focus,
+      select:focus {
+        border-color: #4caf50;
+        outline: none;
+      }
+
+      /* Submit Button */
+      input[type="submit"] {
+        background-color: #4caf50;
+        color: white;
+        padding: 12px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        width: 100%;
+        font-size: 16px;
+        font-weight: 600;
+        transition: background-color 0.3s ease;
+      }
+
+      input[type="submit"]:hover {
+        background-color: #3e8e41;
+      }
+
+      /* Error Messages */
+      .error-messages {
+        color: red;
+        font-size: 14px;
+        margin-bottom: 20px;
+      }
+
+      ul {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      li {
+        margin-bottom: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="form-container">
+      <h1>Register Consumer</h1>
+      <form method="post" action="{% url 'officestaff:registerconsumer' %}">
+        {% csrf_token %}
+    
+        <label for="name">Consumer Name:</label>
+        {{ form.name }}
+    
+        <label for="consumer_number">Consumer Number:</label>
+        {{ form.consumer_number }}
+    
+        <label for="password">Password:</label>
+        {{ form.password }}
+    
+        <label for="meter_number">Meter Number:</label>
+        {{ form.meter_number }}
+    
+        <label for="area_number">Area Number:</label>
+        {{ form.area_number }}
+    
+        <label for="tariff">Tariff Type:</label>
+        {{ form.tariff }}
+    
+        <button type="submit">Register</button>
+    
+        {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+            <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </form>
+    
+    </div>
+  </body>
+</html>

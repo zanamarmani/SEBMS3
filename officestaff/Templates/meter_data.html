@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="app-wrapper">
+    <div class="app-content pt-3 p-md-3 p-lg-4">
+        <div class="container-xl">
+            <div class="row g-3 mb-4 align-items-center justify-content-between">
+                <div class="col-auto">
+                    <h1 class="app-page-title mb-0">{{title}}</h1>
+                </div>
+
+                <div class="tab-content" id="orders-table-tab-content">
+                    <div class="tab-pane fade show active" id="orders-all" role="tabpanel" aria-labelledby="orders-all-tab">
+                        <div class="app-card app-card-orders-table shadow-sm mb-5">
+                            <div class="app-card-body">
+                                <div class="table-responsive">
+                                    <table class="table app-table-hover mb-0 text-left table-green">
+                                        <thead>
+                                            <tr class="table-header">
+												<th>Date</th>
+                                                <th>Meter Number</th>
+                                                <th>Last Reading</th>
+                                                <th>New Reading</th>
+                                                <th>Processed</th>
+                                            </tr>
+                                         
+                                        </thead>
+                                        <tbody>
+                                            {% for meter in meter_list %}
+												<tr  class=" table-row " >
+													<td>{{ meter.reading_date }}</td>
+													<td>{{ meter.meter.meter_number }}</td>
+													<td>{{ meter.last_reading }}</td>
+													<td>{{ meter.new_reading }}</td>
+													<td>{{meter.processed}}</td>
+												</tr>
+												{% endfor %}
+                                            </tbody>
+                                    </table>
+                                </div><!--//table-responsive-->
+                            </div><!--//app-card-body-->
+                        </div><!--//app-card-->
+                    </div><!--//tab-pane-->
+                </div><!--//tab-content-->
+            </div><!--//container-xl-->
+        </div><!--//app-content-->
+    </div><!--//app-wrapper-->
+{% endblock %}

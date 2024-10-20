@@ -1,0 +1,11 @@
+{% extends 'sdo/base.html' %}
+
+{% block content %}
+    <h1>Create SDO Profile</h1>
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Create Profile</button>
+    </form>
+    {% endblock  %}
+

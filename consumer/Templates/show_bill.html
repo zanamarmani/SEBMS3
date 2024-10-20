@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="https://billing.wpdgb.gov.pk/favicon.ico"
+    />
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+    <title>BiLL</title>
+  </head>
+  <body>
+    <div class="center page watermarked">
+      <table id="mainTable" border style="width: 990px; height: 100%">
+        <thead></thead>
+        <tbody>
+          <tr>
+            <td rowspan="3">
+              <img
+                src="https://billing.wpdgb.gov.pk/assets/images/logo.png"
+                style="height: 60px"
+              />
+            </td>
+            <td colspan="5" class="bill-title">
+              WATER & POWER DEPARTMENT GILGIT BALTISTAN <br />Electricity
+              Consumer Bill<br />
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2" rowspan="6">
+              <img
+                style="width: 150px; height: 150px"
+                src="https://billing.wpdgb.gov.pk/NA"
+                alt="Meter Image"
+              />
+            </td>
+            <td class="title">METER NO</td>
+            <td class="title">BILL MONTH</td>
+            <td class="title">READING DATE</td>
+          </tr>
+          <tr class="normal-row">
+            <td>{{consumer.meter_number}}</td>
+            <td>{{bill.month}}</td>
+            <td>{{reading.reading_date}}</td>
+          </tr>
+          <tr class="title">
+
+            
+            <td>DUE DATE</td>
+          </tr>
+          <tr class="normal-row">
+            
+            
+            <td>{{due_date}}</td>
+          </tr>
+          <tr>
+            <td class="title">Consumer No</td>
+            
+            <td colspan="2" rowspan="2">
+              <b>Payment History (Last 12 Months)</b>
+            </td>
+          </tr>
+          <tr class="normal-row">
+            <td>{{consumer.consumer_number}}</td>
+            <td>2.5</td>
+          </tr>
+          <tr>
+            <td class="title" colspan="2">Consumer Name</td>
+            <td class="title" colspan="2">Consumer Address</td>
+            <td colspan="2" rowspan="12" style="vertical-align: top">
+              <table style="width: 100%">
+                <thead>
+                  <tr class="title">
+                    <td>MONTH</td>
+                    <td>STATUS</td>
+                    <td>UNITS</td>
+                    <td>AMOUNT</td>
+                    <td>PAY DATE</td>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>March 2024</td>
+                    <td>UNPAID</td>
+                    <td>130.00</td>
+                    <td>21786</td>
+                    <td>AIN</td>
+                  </tr>
+                  <tr>
+                    <td>February 2024</td>
+                    <td>UNPAID</td>
+                    <td>90.00</td>
+                    <td>14795</td>
+                    <td>AIN</td>
+                  </tr>
+                  <tr>
+                    <td>Dec 23,Jan 24</td>
+                    <td>UNPAID</td>
+                    <td>376.00</td>
+                    <td>7969</td>
+                    <td>AIN</td>
+                  </tr>
+                  <tr>
+                    <td>November 2023</td>
+                    <td>PAID</td>
+                    <td>475.00</td>
+                    <td>8817</td>
+                    <td>07-12-2023</td>
+                  </tr>
+                  <tr>
+                    <td>October 2023</td>
+                    <td>UNPAID</td>
+                    <td>217.00</td>
+                    <td>32651</td>
+                    <td>AIN</td>
+                  </tr>
+                  <tr>
+                    <td>September 2023</td>
+                    <td>UNPAID</td>
+                    <td>305.00</td>
+                    <td>31787</td>
+                    <td>AIN</td>
+                  </tr>
+                  <tr>
+                    <td>Jul 23,Aug 23</td>
+                    <td>UNPAID</td>
+                    <td>330.00</td>
+                    <td>30439</td>
+                    <td>AIN</td>
+                  </tr>
+                  <tr>
+                    <td>June 2023</td>
+                    <td>UNPAID</td>
+                    <td>155.00</td>
+                    <td>29207</td>
+                    <td>AIN</td>
+                  </tr>
+                  <tr>
+                    <td>May 2023</td>
+                    <td>UNPAID</td>
+                    <td>155.00</td>
+                    <td>28635</td>
+                    <td>AIN</td>
+                  </tr>
+                  <tr>
+                    <td>April 2023</td>
+                    <td>UNPAID</td>
+                    <td>235.00</td>
+                    <td>28063</td>
+                    <td>AIN</td>
+                  </tr>
+                  <tr>
+                    <td>March 2023</td>
+                    <td>UNPAID</td>
+                    <td>135.00</td>
+                    <td>27100</td>
+                    <td>AIN</td>
+                  </tr>
+                  <tr>
+                    <td>February 2023</td>
+                    <td>UNPAID</td>
+                    <td>170.00</td>
+                    <td>26616</td>
+                    <td>AIN</td>
+                  </tr>
+                </tbody>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            
+            <td colspan="2" style="height: 60px">{{consumer.name}}</td>
+            <td colspan="2" style="height: 60px">{{consumer.address}}</td>
+             
+          </tr>
+          <tr class="title">
+            <td>PMT NO</td>
+            <td>FEEDER</td>
+            <td>SUB DIVISION</td>
+            <td>DIVISION</td>
+          </tr>
+          <tr class="normal-row">
+            <td>11095010005</td>
+            <td>Jug-01</td>
+            <td>Sai Juglote 09</td>
+            <td>Gilgit Division</td>
+          </tr>
+          <tr class="title">
+            <td>No of Months</td>
+            <td colspan="2">TARIFF</td>
+            <td>Detection Units</td>
+          </tr>
+          <tr class="normal-row">
+            <td>1</td>
+            <td colspan="2">A-1</td>
+            <td>0.00</td>
+          </tr>
+          <tr class="title">
+            <td>Average Units</td>
+            <td colspan="2">Present Reading</td>
+            <td>Previous Reading</td>
+          </tr>
+          <tr class="normal-row">
+            <td>110.00</td>
+            <td colspan="2">{{reading.new_raeding}}</td>
+            <td>{{rading.last_reading}}</td>
+          </tr>
+          <tr class="title">
+            <td>Units</td>
+            <td colspan="2">MF</td>
+            <td>Units Consumed</td>
+          </tr>
+          <tr class="normal-row">
+            <td>{{bill.consumed_units}}</td>
+            <td colspan="2">1</td>
+            <td>{{bill.consumed_units}}</td>
+          </tr>
+         
+          <tr class="title">
+            <td colspan="4">Current Month Billing Details</td>
+          </tr>
+          <tr class="title">
+            <td colspan="3">Total Charges</td>
+            <td>Amount</td>
+          </tr>
+          <tr>
+            <td colspan="3" rowspan="6" style="height: 100px">
+              <b>Bank Charges </b> <br />
+              <b>Cost of Electricity </b> <br />
+              <b>Arrears Charges </b> <br />
+              <b>Installment 5 </b> <br />
+            </td>
+            <td colspan="1" rowspan="6" style="height: 100px">
+              <b>5</b><br />
+              <b>340</b><br />
+              <b>21781</b><br />
+              <b>6529</b><br />
+            </td>
+          </tr>
+          <tr class="title">
+            <td>Arrears</td>
+            <td>21781</td>
+          </tr>
+          <tr class="title">
+            <td>Current Bill</td>
+            <td>340</td>
+          </tr>
+          <tr class="title">
+            <td>Payable Amount</td>
+            <td>{{payable_due}}</td>
+          </tr>
+          <tr class="title">
+            <td>Due Date</td>
+            <td>19-05-2024</td>
+          </tr>
+          <tr class="title">
+            <td>Payable After DueDate</td>
+            <td>28689</td>
+          </tr>
+          <tr class="title">
+            <td colspan="3">Current Bill</td>
+            <td>28655</td>
+            <td colspan="2">Bill Calculation</td>
+          </tr>
+          <tr>
+            <td colspan="3">Surcharges (10%)</td>
+            <td>34</td>
+            <td colspan="2" rowspan="2" style="height: 80px">
+              <table style="border: 0px; width: 100%">
+                <thead>
+                  <tr>
+                    <th>Unit Range</th>
+                    <th>Units</th>
+                    <th>Rate</th>
+                    <th>Amount</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>0-100</td>
+                    <td>100</td>
+                    <td>3</td>
+                    <td>300</td>
+                  </tr>
+                  <tr>
+                    <td>100-200</td>
+                    <td>10</td>
+                    <td>4</td>
+                    <td>40</td>
+                  </tr>
+                  <tr>
+                    <td colspan="3" style="text-align: right"><b>Total:</b></td>
+                    <td colspan="3"><b>340 x 1 = 340</b></td>
+                  </tr>
+                </tbody>
+              </table>
+            </td>
+          </tr>
+          <tr class="title">
+            <td colspan="3">Gross Total</td>
+            <td>28689</td>
+          </tr>
+          <tr class="title">
+            <td colspan="6">Bill/Meter Status: Active.</td>
+          </tr>
+          <tr>
+            <td colspan="6">
+              <b style="height: 100px; font-size: 60px; font-weight: bold"
+                >T O L E T</b
+              >
+              <br />
+              Email:
+              <b
+                ><a
+                  href="/cdn-cgi/l/email-protection"
+                  class="__cf_email__"
+                  data-cfemail="20494e464f6057504447420e474f560e504b"
+                  >[email&#160;protected]</a
+                ></b
+              >
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Phone:
+              <b>05811-922158</b> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Website:
+              <b>www.wpdgb.gov.pk</b>
+            </td>
+          </tr>
+          <tr
+            style="border-left: 1px solid white; border-right: 1px solid white"
+          >
+            <td colspan="6">
+              <p>
+                - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                - - - - - - - - - - - - - - - -
+              </p>
+            </td>
+          </tr>
+          <tr
+            style="
+              border-left: 1px solid white;
+              border-right: 1px solid white;
+              border-top: 1px solid white;
+            "
+          >
+            <td rowspan="3">
+              <img
+                src="https://billing.wpdgb.gov.pk/assets/images/logo.png"
+                style="height: 60px"
+              />
+            </td>
+            <td colspan="4" rowspan="3">
+              <img
+                width="100px"
+                src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIgAAAAeAQMAAADNS8RPAAAABlBMVEX///8AAABVwtN+AAAAAXRSTlMAQObYZgAAAAlwSFlzAAAOxAAADsQBlSsOGwAAACJJREFUKJFj+Mx/+M+BMzb2Bp8/nGE+fODPeYZRkVERsAgAwWpJIIbNBt4AAAAASUVORK5CYII="
+              />
+            </td>
+            <td
+              colspan="3"
+              style="border-right: 1px solid white; border-top: 1px solid white"
+            >
+              <b>To Recieve Your Bill Via SMS/Email</b>
+            </td>
+          </tr>
+          <tr>
+            <td
+              style="border-right: 1px solid white; border-top: 1px solid white"
+            >
+              Cell No: ________________________
+            </td>
+          </tr>
+          <tr>
+            <td
+              style="border-right: 1px solid white; border-top: 1px solid white"
+            >
+              Email: __________________________
+            </td>
+          </tr>
+          <tr>
+            <td class="title">Consumer No</td>
+            
+            <td class="title" colspan="2">Meter No</td>
+            <td class="title">Payable Within Due Date</td>
+          </tr>
+          <tr class="normal-row">
+            <td>{{consumer.consumer_number}}</td>
+            
+            <td colspan="2">{{consumer.meter_number}}</td>
+            <td><b>{{bill.amount_due}}</b></td>
+          </tr>
+          <tr>
+            <td class="title">Consumer Name</td>
+            <td class="title" colspan="2">Bill Month</td>
+            <td class="title" colspan="2">Due Date</td>
+            <td class="title">Payable After Due</td>
+          </tr>
+          <tr class="normal-row">
+            <td>{{consumer.name}}</td>
+            <td colspan="2">{{reading.reading_date}}</td>
+            <td colspan="2">{{due_date}}</td>
+            <td><b>{{payable_after_due}}</b></td>
+          </tr>
+        </tbody>
+      </table>
+      <p style="font-size: 10px">
+        Designed By SATA Technologies Pvt. Ltd (www.sata.pk)
+      </p>
+    </div>
+    <script
+      data-cfasync="false"
+      src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"
+    ></script>
+  </body>
+</html>

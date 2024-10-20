@@ -1,0 +1,9 @@
+<h2>Print Current Month Bill</h2>
+{% if bill %}
+  <p>Bill Month: {{ bill.billmonth }}</p>
+  <p>Units Consumed: {{ bill.unitsconsumed }}</p>
+  <p>Amount: {{ bill.payableamount }}</p>
+  <button onclick="window.print()">Print</button>
+{% else %}
+  <p>No bill available to print.</p>
+{% endif %}

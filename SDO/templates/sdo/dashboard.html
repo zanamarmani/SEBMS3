@@ -1,0 +1,265 @@
+{% extends "sdo/base.html" %}
+
+{% block content %}
+    <div class="app-wrapper">
+
+        <div class="app-content pt-3 p-md-3 p-lg-4">
+            <div class="container-xl">
+
+                <h1 class="app-page-title">Overview</h1>
+
+                <div class="app-card alert alert-dismissible shadow-sm mb-4 border-left-decoration" role="alert">
+                    <div class="inner">
+                        <div class="app-card-body p-3 p-lg-4">
+                            <h3 class="mb-3">Welcome to Smart Electricity Billing Management System</h3>
+                            <div class="row gx-5 gy-3">
+                                <div class="col-12 col-lg-9">
+                                    <div>Our system is designed to bring reliability, accuracy, and efficiency to electricity billing, paving the way for a smarter future.</div>
+                                </div><!--//col-->
+                                <div class="col-12 col-lg-3"></div><!--//col-->
+                            </div><!--//row-->
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div><!--//app-card-body-->
+                    </div><!--//inner-->
+                </div><!--//app-card-->
+
+                <div class="row g-4 mb-4">
+                    <div class="col-6 col-lg-3">
+                        <div class="app-card app-card-stat shadow-sm h-100 card-effect" style="border-radius: 10px; background-color: #5bb582;">
+                            <div class="app-card-body p-3 p-lg-4">
+                                <h4 class="stats-type mb-1 text-white">Total Consumers</h4>
+                                <div class="stats-figure text-white">{{ consumers }}</div>
+                            </div><!--//app-card-body-->
+                            <a class="app-card-link-mask" href="#"></a>
+                        </div><!--//app-card-->
+                    </div><!--//col-->
+
+                    <div class="col-6 col-lg-3">
+                        <div class="app-card app-card-stat shadow-sm h-100 card-effect" style="border-radius: 10px; background-color: #5ba3b5;">
+                            <div class="app-card-body p-3 p-lg-4">
+                                <h4 class="stats-type mb-1 text-white">Total Office Staffs</h4>
+                                <div class="stats-figure text-white">{{ total_office_staff }}</div>
+                            </div><!--//app-card-body-->
+                            <a class="app-card-link-mask" href="#"></a>
+                        </div><!--//app-card-->
+                    </div><!--//col-->
+
+                    <div class="col-6 col-lg-3">
+                        <div class="app-card app-card-stat shadow-sm h-100 card-effect" style="border-radius: 10px; background-color: #bc4b4b;">
+                            <div class="app-card-body p-3 p-lg-4">
+                                <h4 class="stats-type mb-1 text-white">Total Meter Readers</h4>
+                                <div class="stats-figure text-white">{{ total_meter_reader }}</div>
+                            </div><!--//app-card-body-->
+                            <a class="app-card-link-mask" href="#"></a>
+                        </div><!--//app-card-->
+                    </div><!--//col-->
+
+                    <div class="col-6 col-lg-3">
+                        <div class="app-card app-card-stat shadow-sm h-100 card-effect" style="border-radius: 10px; background-color: #ba8446; ">
+                            <div class="app-card-body p-3 p-lg-4">
+                                <h4 class="stats-type mb-1 text-white">Total Users</h4>
+                                <div class="stats-figure text-white">{{ users }}</div>
+                            </div><!--//app-card-body-->
+                            <a class="app-card-link-mask" href="#"></a>
+                        </div><!--//app-card-->
+                    </div><!--//col-->
+                </div><!--//row-->
+
+                <div class="row g-4 mb-4">
+                    <div class="col-12">
+                        <!-- First graph: Total Bills and Paid Bills -->
+                        <div class="app-card app-card-chart h-100 shadow-sm">
+                            <div class="app-card-header p-3">
+                                <div class="row justify-content-between align-items-center">
+                                    <div class="col-auto">
+                                        <h4 class="app-card-title">Total Bills and Paid Bills</h4>
+                                    </div>
+                                    <div class="col-auto">
+                                        <div class="card-header-action">
+                                            <!-- <a href="charts.html">More charts</a> -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="app-card-body p-3 p-lg-4">
+                                <div class="chart-container">
+                                    <canvas id="line-chart" width="800" height="300"></canvas> <!-- Adjust width and height -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 mt-4">
+                        <!-- Second graph: Paid and Unpaid Bills -->
+                        <div class="app-card app-card-chart h-100 shadow-sm">
+                            <div class="app-card-header p-3">
+                                <div class="row justify-content-between align-items-center">
+                                    <div class="col-auto">
+                                        <h4 class="app-card-title">Paid and Unpaid Bills</h4>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="app-card-body p-3 p-lg-4">
+                                <div class="progress mb-4">
+                                    <div class="progress-bar bg-success" id="paid-progress" role="progressbar" style="width: 80%;" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100">
+                                        <span id="paid-text">80% Paid</span>
+                                    </div>
+                                    <div class="progress-bar bg-danger" id="unpaid-progress" role="progressbar" style="width: 20%;" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100">
+                                        <span id="unpaid-text">20% Unpaid</span>
+                                    </div>
+                                </div>
+                                <div class="chart-container">
+                                    <canvas id="canvas-barchart" width="800" height="400"></canvas> <!-- Adjust width and height -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                
+
+
+
+                <div>
+                    <h1 class="app-page-title p-md-3 p-lg-4" style="font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 2rem;">Tariffs</h1>
+                </div>
+                <div class="row g-4 mb-4">
+                    <!-- Commercial Card -->
+                    <div class="col-12 col-lg-4">
+                        <div class="app-card app-card-basic d-flex flex-column align-items-start shadow-sm card-effect" style="border-radius: 10px; overflow: hidden; background-color: #ffffff; transition: transform 0.5s; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+                            <div class="app-card-header p-3" style="background-color: #dbf3e9; width: 100%; font-family: 'Poppins', sans-serif; border-bottom: 1px solid #448e49;">
+                                <h3 style="font-size: 1.5rem; font-weight: bold; color: #302f2f;">Commercial <i class="bi bi-briefcase" style="font-size: 1.5rem; float: right;"></i></h3>
+                            </div>
+                            <div class="app-card-body p-3" style="color: #555; text-align: left;">
+                                <div class="tariff-info" style="border-bottom: 1px solid #eee; padding-bottom: 8px;">
+                                    <p style="margin-bottom: 6px;">Price for 100 units:</p>
+                                    <span style="font-weight: bold; color: #5bb582;">3 rupees</span>
+                                </div>
+                                <div class="tariff-info" style="border-bottom: 1px solid #eee; padding-bottom: 8px; padding-top: 8px;">
+                                    <p style="margin-bottom: 6px;">Price for 100-200 units:</p>
+                                    <span style="font-weight: bold; color: #5bb582;">4 rupees</span>
+                                </div>
+                                <div class="tariff-info" style="padding-top: 8px;">
+                                    <p style="margin-bottom: 6px;">Price for above 200 units:</p>
+                                    <span style="font-weight: bold; color: #5bb582;">5 rupees</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Domestic Card -->
+                    <div class="col-12 col-lg-4">
+                        <div class="app-card app-card-basic d-flex flex-column align-items-start shadow-sm card-effect" style="border-radius: 10px; overflow: hidden; background-color: #ffffff; transition: transform 0.5s; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+                            <div class="app-card-header p-3" style="background-color: #dbf3e9; width: 100%; font-family: 'Poppins', sans-serif; border-bottom: 1px solid #448e49;">
+                                <h3 style="font-size: 1.5rem; font-weight: bold; color: #302f2f;">Domestic <i class="bi bi-house-door" style="font-size: 1.5rem; float: right;"></i></h3>
+                            </div>
+                            <div class="app-card-body p-4" style="color: #555; text-align: left;">
+                                <div class="tariff-info" style="border-bottom: 1px solid #eee; padding-bottom: 8px;">
+                                    <p style="margin-bottom: 6px;">Price for 100 units:</p>
+                                    <span style="font-weight: bold; color: #5bb582;">3 rupees</span>
+                                </div>
+                                <div class="tariff-info" style="border-bottom: 1px solid #eee; padding-bottom: 8px; padding-top: 8px;">
+                                    <p style="margin-bottom: 6px;">Price for 100-200 units:</p>
+                                    <span style="font-weight: bold; color: #5bb582;">4 rupees</span>
+                                </div>
+                                <div class="tariff-info" style="padding-top: 8px;">
+                                    <p style="margin-bottom: 6px;">Price for above 200 units:</p>
+                                    <span style="font-weight: bold; color: #5bb582;">5 rupees</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Industrial Card -->
+                    <div class="col-12 col-lg-4">
+                        <div class="app-card app-card-basic d-flex flex-column align-items-start shadow-sm card-effect" style="border-radius: 10px; overflow: hidden; background-color: #ffffff; transition: transform 0.5s; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+                            <div class="app-card-header p-3" style="background-color: #dbf3e9; width: 100%; font-family: 'Poppins', sans-serif; border-bottom: 1px solid #448e49;">
+                                <h3 style="font-size: 1.5rem; font-weight: bold; color: #302f2f;">Industrial <i class="bi bi-building" style="font-size: 1.5rem; float: right;"></i></h3>
+                            </div>
+                            <div class="app-card-body p-4" style="color: #555; text-align: left;">
+                                <div class="tariff-info" style="border-bottom: 1px solid #eee; padding-bottom: 8px;">
+                                    <p style="margin-bottom: 6px;">Load less than 25 kw:</p>
+                                    <span style="font-weight: bold; color: #5bb582;">10 rupees</span>
+                                </div>
+                                <div class="tariff-info" style="border-bottom: 1px solid #eee; padding-bottom: 8px; padding-top: 8px;">
+                                    <p style="margin-bottom: 6px;">Load upto 25 to 500 kw:</p>
+                                    <span style="font-weight: bold; color: #5bb582;">14 rupees</span>
+                                </div>
+                                <div class="tariff-info" style="padding-top: 8px;">
+                                    <p style="margin-bottom: 6px;">Load above 500 kw:</p>
+                                    <span style="font-weight: bold; color: #5bb582;">14 rupees</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+
+
+
+            </div><!--//container-xl-->
+        </div><!--//app-content-->
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Initialize your charts here
+        var ctx = document.getElementById('line-chart').getContext('2d');
+        // var lineChart = new Chart(ctx, {
+        //     type: 'line',
+        //     data: {
+        //         labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+        //         datasets: [{
+        //             label: 'Total Bills',
+        //             data: [12, 19, 3, 5, 2, 3, 7],
+        //             borderColor: 'rgba(75, 192, 192, 1)',
+        //             borderWidth: 2,
+        //             fill: false
+        //         }, {
+        //             label: 'Paid Bills',
+        //             data: [10, 15, 2, 5, 1, 2, 6],
+        //             borderColor: 'rgba(153, 102, 255, 1)',
+        //             borderWidth: 2,
+        //             fill: false
+        //         }]
+        //     },
+        //     options: {
+        //         responsive: true,
+        //         scales: {
+        //             y: {
+        //                 beginAtZero: true
+        //             }
+        //         }
+        //     }
+        // });
+
+        var barCtx = document.getElementById('canvas-barchart').getContext('2d');
+        var barChart = new Chart(barCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Paid', 'Unpaid'],
+                datasets: [{
+                    label: '# of Bills',
+                    data: [80, 20],
+                    backgroundColor: [
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(255, 99, 132, 0.2)',
+                    ],
+                    borderColor: [
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(255, 99, 132, 1)',
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+
+  
+{% endblock %}

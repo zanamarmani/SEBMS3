@@ -1,0 +1,10 @@
+<h1>Current Month Bill</h1>
+{% if bill %}
+    <p>Amount Due: {{ bill.amount_due }}</p>
+    <p>Status: {% if bill.paid %}Paid{% else %}Unpaid{% endif %}</p>
+    {% if not bill.paid %}
+    <a href="{% url 'pay_online' bill.id %}">Pay Now</a>
+    {% endif %}
+{% else %}
+    <p>No bill found for the current month.</p>
+{% endif %}

@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    
+
+    
+    <table border="1">
+        <tr>
+            <th>Date</th>
+            <th>Meter Number</th>
+            <th>Last Reading</th>
+            <th>New Reading</th>
+            <th>Processed</th>
+        </tr>
+        {% for meter in meter_list %}
+        <tr>
+            <td>{{ meter.reading_date }}</td>
+            <td>{{ meter.meter_number }}</td>
+            <td>{{ meter.last_reading }}</td>
+            <td>{{ meter.new_reading }}</td>
+            <td>{{meter.processed}}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% endblock  %}
+

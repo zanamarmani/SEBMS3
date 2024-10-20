@@ -1,0 +1,105 @@
+/* Table Header Styling */
+.table-green thead th {
+    background-color: #d4edda; /* Light green background */
+    color: #212221; /* Dark green text */
+    font-weight: 600;
+    text-transform: uppercase;
+    padding: 10px;
+    border-bottom: 3px solid #c3e6cb;
+    font-size: .8rem;
+    letter-spacing: 0.05em;
+    border: none;
+}
+
+/* Table row styling */
+.table-green tbody tr {
+    background-color: #ffffff;
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+    border-radius: 10px;
+    margin-bottom: 10px;
+}
+
+/* Zebra stripes for better readability */
+.table-green tbody tr:nth-of-type(odd) {
+    background-color: #f7fcf8; /* Very light green */
+}
+
+/* Hover effect on table rows */
+/* .table-green tbody tr:hover {
+    background-color: #e6f5e9; 
+    transform: scale(1.02);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+} */
+
+/* Table cell padding and layout */
+.table-green td, .table-green th {
+    padding: 12px;
+    border-top: none;
+    vertical-align: middle;
+    padding: 12px 15px;
+    border: none;
+}
+
+/* Styling the 'View Details' button */
+.btn-view-details {
+    background-color: #28a745; /* Green button */
+    color: #fff;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 10px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.btn-view-details:hover {
+    background-color: #218838; /* Darker green on hover */
+    box-shadow: 0 0 10px rgba(40, 167, 69, 0.5);
+}
+.btn-reject {
+    background-color: #ce3737; /* Green button */
+    color: #fff;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 10px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.btn-reject:hover {
+    background-color: #ac2e2e; /* Darker green on hover */
+    box-shadow: 0 0 10px rgba(199, 64, 64, 0.705);
+}
+
+/* Card-like row appearance */
+.table-green tbody tr {
+    display: table-row;
+    /* border-radius: 12px; */
+    overflow: hidden;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
+}
+
+/* Better typography for readability */
+.table-green td {
+    font-family: 'Roboto', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 400;
+    color: #333;
+}
+
+/* Hover effect on buttons */
+.table-green .btn-view-details:hover {
+    background-color: #218838;
+    box-shadow: 0 4px 10px rgba(33, 136, 56, 0.4);
+}
+
+/* Adding rounded corners to table */
+.table-green {
+    /* border-radius: 12px; */
+    overflow: hidden;
+    background-color: #ffffff;
+}
+
+/* //////////////////////////  testing */

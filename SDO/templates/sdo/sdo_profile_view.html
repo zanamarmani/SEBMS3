@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SDO Profile</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        .profile-container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+        }
+        .profile-picture {
+            flex: 1;
+            text-align: center;
+        }
+        .profile-picture img {
+            border-radius: 50%;
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+        }
+        .profile-details {
+            flex: 2;
+            padding: 20px;
+        }
+        .profile-details h1 {
+            margin-top: 0;
+            color: #333;
+        }
+        .profile-details p {
+            font-size: 18px;
+            margin: 10px 0;
+            color: #666;
+        }
+        .edit-btn {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #2e944d;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+        .edit-btn:hover {
+            background-color: #2e944d;
+        }
+    </style>
+</head>
+<body>
+
+<div class="profile-container">
+    <div class="profile-picture">
+        <img src="" alt="img">
+        <!-- Replace the src URL with the actual profile image -->
+    </div>
+    <div class="profile-details">
+        <h1>{{ profile.first_name }} {{ profile.last_name }}</h1>
+        <p><strong>Office Location:</strong> {{ profile.office_location }}</p>
+        <p><strong>Joining Date:</strong> {{ profile.joining_date }}</p>
+        <a href="{% url 'SDO:edit_sdo_profile' %}" class="edit-btn">Edit Profile</a>
+    </div>
+</div>
+
+</body>
+</html>

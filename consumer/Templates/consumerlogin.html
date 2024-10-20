@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consumer</title>
+</head>
+<body>
+    <h1>Consumer</h1>
+    <form action="{% url 'consumer:profile' %}" method="POST">
+        {% csrf_token %}
+        <label for="username">Consumer Number:</label><br>
+        <input type="text" id="username" name="consumer_number"><br>
+        <input type="submit" value="Login">
+    </form>
+</body>
+</html>

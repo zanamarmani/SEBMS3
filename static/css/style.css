@@ -1,0 +1,26 @@
+.btn-approve {
+    background-color: #747f76;
+    color: white;
+    border-radius: 5px;
+    padding: 1px 15px;
+  }
+
+  .btn-approve:hover {
+    background-color: #4cae4c;
+  }
+
+  .btn-reject {
+    background-color: #a10f0f;
+    color: white;
+    border-radius: 5px;
+    /* padding: 0 15px; */
+  }
+
+  .btn-reject:hover {
+    background-color: #ca1913;
+  }
+
+  /* .action-buttons button {
+    margin-right: 5px;
+  } */
+  

@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SDO Profile</title>
+</head>
+<body>
+    <h1>SDO Profile</h1>
+    <p><strong>First Name:</strong> {{ profile.first_name }}</p>
+    <p><strong>Last Name:</strong> {{ profile.last_name }}</p>
+    <p><strong>Office Location:</strong> {{ profile.office_location }}</p>
+    <p><strong>Joining Date:</strong> {{ profile.joining_date }}</p>
+
+    <a href="{% url 'SDO:edit_sdo_profile' %}">Edit Profile</a>
+</body>
+</html>

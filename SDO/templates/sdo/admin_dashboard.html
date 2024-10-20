@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    {% comment %} <link rel="stylesheet" href="{% static 'styles.css' %}">  <!-- Link to a CSS file for styling --> {% endcomment %}
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .sidebar {
+            width: 250px;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background-color: #333;
+            padding-top: 20px;
+            color: #fff;
+        }
+        .sidebar a {
+            padding: 10px 15px;
+            text-decoration: none;
+            font-size: 18px;
+            color: #fff;
+            display: block;
+        }
+        .sidebar a:hover {
+            background-color: #575757;
+        }
+        .submenu a {
+            padding-left: 30px;
+        }
+        .content {
+            margin-left: 260px;
+            padding: 20px;
+        }
+        h1 {
+            font-size: 24px;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>Admin Dashboard</h2>
+        <a href="{% url 'admin_dashboard' %}">Dashboard</a>
+        <a href="{% url 'approve_new_consumers' %}">Approve New Consumers</a>
+        <a href="#">Manage Users</a>
+        <div class="submenu">
+            <a href="{% url 'add_user' %}">Add User</a>
+            <a href="{% url 'show_all_users' %}">Show All Users</a>
+        </div>
+        <a href="{% url 'show_all_consumers' %}">Show All Consumers</a>
+        {% comment %} <a href="{% url 'show_all_bills' %}">Show All Bills</a> {% endcomment %}
+    </div>
+    <div class="content">
+        <h1>Welcome to the Admin Dashboard</h1>
+        <p>Select an option from the menu to get started.</p>
+    </div>
+</body>
+</html>

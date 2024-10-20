@@ -1,0 +1,62 @@
+  {% extends 'sdo/base.html' %}
+
+{% block content %}
+
+<div class="app-wrapper">
+    <div class="app-content pt-3 p-md-3 p-lg-4">
+        <div class="container-xl">
+            <div class="row g-3 mb-4 align-items-center justify-content-between">
+                <div class="col-auto">
+                    <h1 class="app-page-title mb-0">{{title}}</h1>
+                </div>
+
+                <div class="tab-content" id="orders-table-tab-content">
+                    <div class="tab-pane fade show active" id="orders-all" role="tabpanel" aria-labelledby="orders-all-tab">
+                        <div class="app-card app-card-orders-table shadow-sm mb-5">
+                            <div class="app-card-body">
+                                <div class="table-responsive">
+                                    <table class="table app-table-hover mb-0 text-left table-green">
+                                        <thead>
+                                            <tr class="table-header">
+                                              <th>Email</th>
+                                              <th>Role</th>
+                                              <th style="text-align: center;" >Action</th>
+                                            </tr>
+                                            
+                                        </thead>
+                                        <tbody>
+                                            {% for user in users %}
+											<tr class="table-row">
+                        <td>{{ user.email }}</td>
+                        <td>
+                          {% if user.is_office_staff %}
+                          Office Staff
+                          {% elif user.is_meter_reader %}
+                          Meter Reader
+                          {% elif user.is_consumer %}
+                          Consumer
+                          {% else %}
+                          SDO
+                          {% endif %}
+                        </td>
+                
+                        {% if user.pk %} 
+                        <td style="text-align: center;">
+                          <a class="btn-sm app-btn-secondary py-1" href="{% url 'SDO:user_update' user.pk %}">Update User</a>
+                          <a class="btn-sm app-btn-secondary py-1" href="{% url 'SDO:update_password' user.pk %}">Change User Password</a>
+                          <a class="btn-sm app-btn-secondary py-1 " href="{% url 'SDO:user_delete' user.pk %}">Delete User</a>
+                        </td>
+                        {% endif %} 
+                      </tr>
+                      {% endfor %}
+                    </tbody>
+                                    </table>
+                                </div><!--//table-responsive-->
+                            </div><!--//app-card-body-->
+                        </div><!--//app-card-->
+                    </div><!--//tab-pane-->
+                </div><!--//tab-content-->
+            </div><!--//container-xl-->
+        </div><!--//app-content-->
+    </div><!--//app-wrapper-->
+{% endblock %}

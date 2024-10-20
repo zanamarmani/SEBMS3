@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Staff Home Page</title>
+    <meta name="description" content="" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="" />
+  </head>
+  <body>
+    <h2>Welcome To Staff Home</h2>
+    <p>
+      This is your personalized staff home page. You can access all your
+      employee information, tasks, and reports here.
+    </p>
+    <a href="{% url 'officestaff:register_consumer' %}">Register a New Consumer</a>
+    <br>
+    <a href="{% url 'officestaff:list_consumers' %}">Show all Consumers</a>
+    <br>
+    <a href="{% url 'officestaff:all_readings' %}">Get All Readings</a>
+    <br>
+
+    <!-- List all consumers with an option to generate a bill -->
+    <h3>Generate Bill for Consumers</h3>
+     <ul>
+      {% for consumer in consumers %}
+        <li>
+          {{ consumer.user.username }} - {{ consumer.meter_number }}
+          <a href="{% url 'officestaff:generate_bill' consumer.id %}">Generate Bill</a>
+        </li>
+      {% endfor %}
+    </ul>  
+
+    <script src="" async defer></script>
+  </body>
+</html>

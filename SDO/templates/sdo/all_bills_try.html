@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Show All Bills</title>
+</head>
+<body>
+    <div class="content">
+        <h1>All Bills</h1>
+        <table border="1">
+            <tr>
+                <th>Consumer</th>
+                <th>Amount</th>
+                <th>Status</th>
+                <th>Due Date</th>
+            </tr>
+            {% for bill in bills %}
+            <tr>
+                <td>{{ bill.consumer.name }}</td>
+                <td>{{ bill.amount }}</td>
+                <td>{{ bill.status }}</td>
+                <td>{{ bill.due_date }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+</body>
+</html>
