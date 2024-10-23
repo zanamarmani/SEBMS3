@@ -23,19 +23,21 @@
                                                 <th>Meter Number</th>
                                                 <th>Area Number</th>
                                                 <th>Tariff</th>
+                                                <th>Approved</th>
                                                 <th>Action</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {% for consumer in consumers %}
+                                            {% for bill in bill %}
                                             <tr class="table-row">
-                                                <td>{{ consumer.consumer_name }}</td>
-                                                <td>{{ consumer.consumer_number }}</td>
-                                                <td>{{ consumer.meter_number }}</td>
-                                                <td>{{ consumer.consumer_division }}</td>
-                                                <td>{{ consumer.consumer_tariff }}</td>
+                                                <td>{{ bill.meter.consumer.consumer_name }}</td>
+												<td>{{ bill.meter.consumer.consumer_number }}</td>
+												<td>{{ bill.meter.meter_number }}</td>
+												<td>{{ bill.meter.consumer.consumer_division }}</td>
+												<td>{{ bill.meter.consumer.consumer_tariff }}</td>
+												<td>{{ bill.meter.consumer.approved }}</td>
                                                 <td>
-                                                    <a href="{% url 'SDO:consumer_profile' consumer.id %}">
+                                                    <a href="{% url 'SDO:consumer_profile' bill.meter.consumer.id %}">
                                                         <button class="btn-view-details" type="button">View Details</button>
                                                     </a>
                                                 </td>

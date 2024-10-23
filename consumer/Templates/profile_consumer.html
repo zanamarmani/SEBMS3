@@ -83,8 +83,11 @@
         <nav aria-label="breadcrumb" class="main-breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="{%url 'consumer:dashboard'%}">Home</a></li>
-                <li class="breadcrumb-item"><a href="javascript:void(0)">User</a></li>
-                <li class="breadcrumb-item active" aria-current="page">User Profile</li>
+                <li class="breadcrumb-item"><form method="POST" action="{% url 'logout' %}">
+                    {% csrf_token %}
+                    <button class="dropdown-item" type="submit">Log Out</button>
+                </form></li>
+                <li class="breadcrumb-item active" aria-current="page"></li>
             </ol>
         </nav>
 
@@ -141,7 +144,7 @@
                                     <line x1="12" y1="1" x2="12" y2="23"></line>
                                     <path d="M17 5H9a4 4 0 0 0 0 8h6a4 4 0 0 1 0 8H7"></path>
                                 </svg>
-                                <a href="{% url 'consumer:pay_bills_now' %}">Pay your Bills</a>
+                                <a href="{% url 'consumer:pay_bill_demo' %}">Pay your Bills</a>
                             </h6>
                         </li>
                         <li class="list-group-item">

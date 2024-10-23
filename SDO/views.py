@@ -3,6 +3,7 @@ from django.shortcuts import redirect, render,get_object_or_404
 # Create your views here.
 from django.utils.crypto import get_random_string
 
+from SDO.utils import sdo_required
 from bill.models import Bill
 from meterreader.models import Meter
 from users.models import User
@@ -23,7 +24,7 @@ from django.contrib.auth import login
 from .forms import CustomUserCreationForm
 
 
-@login_required
+@sdo_required
 def dashboard(request):
     # Check if the user has a profile
     profile = sdo_profile.objects.filter(user=request.user).first()
@@ -42,11 +43,9 @@ def dashboard(request):
 
     return render(request, 'sdo/dashboard.html', {'users': users,'tariff': tariff,'consumers':consumers,'total_office_staff':office_staffs,'total_users':users,'total_meter_reader':meter_readers})
 
-    profile = sdo_profile.objects.get(user=request.user)  # Adjust according to your logic
-    return render(request, 'sdo/dashboard.html', {'profile':profile,'users': users,'tariff': tariff,'consumers':consumers,'total_office_staff':office_staffs,'total_users':users,'total_meter_reader':meter_readers})
 
 
-@login_required
+@sdo_required
 def create_office_staff(request):
     if request.method == "POST":
         reference_number = get_random_string(8)
@@ -59,11 +58,11 @@ def create_office_staff(request):
         return redirect('SDO:dashboard')
     return render(request, 'sdo/create_office_staff.html')
 
-@login_required
+@sdo_required
 def admin_dashboard(request):
     return render(request, 'sdo/admin_dashboard.html')
 
-@login_required
+@sdo_required
 def approve_new_consumers(request):
     consumers = Consumer.objects.filter(approved=False)
     if request.method == 'POST':
@@ -75,7 +74,7 @@ def approve_new_consumers(request):
     title="Approve Consumer"
     return render(request, 'sdo/approve_new_consumers.html', {'consumers': consumers, 'title':title})
 
-@login_required
+@sdo_required
 def reject_new_consumers(request):
     if request.method == 'POST' and request.POST.get('action') == 'reject':
         consumer_id = request.POST.get('consumer_id')
@@ -88,7 +87,7 @@ def reject_new_consumers(request):
     return render(request, 'sdo/approve_new_consumers.html', {'consumers': consumer})
     # return redirect('approve_new_consumers')
 
-@login_required
+@sdo_required
 def add_user(request):
     if request.method == 'POST':
         form = UserForm(request.POST)
@@ -99,21 +98,23 @@ def add_user(request):
         form = UserForm()
     return render(request, 'sdo/add_user.html', {'form': form})
 
-@login_required
+@sdo_required
 def show_all_consumers(request):
-    consumers = Consumer.objects.all()
-    meter = Meter.objects.all()
+    bill = Bill.objects.all()
     title="Consumer"
-    return render(request, 'sdo/show_all_consumers.html', {'consumers': consumers, 'title':title})
+    return render(request, 'sdo/show_all_consumers.html', {'bill': bill, 'title':title})
 
-@login_required
+@sdo_required
 def consumer_profile(request, consumer_id):
     # Get the consumer profile based on the ID passed in the URL
     consumer = get_object_or_404(Consumer, id=consumer_id)
     
-    return render(request, 'profile_consumer.html',{'consumer':consumer})
+    # Fetch the bill for the current consumer
+    bill = Bill.objects.filter(meter__consumer_id=consumer_id).first()
+    
+    return render(request, 'sdo/profile_consumer.html', {'bill': bill})
 
-@login_required
+@sdo_required
 def show_all_users(request):
     users = User.objects.all()
     title="Users"
@@ -121,7 +122,7 @@ def show_all_users(request):
 
 
 
-@login_required
+@sdo_required
 def tariff_list(request):
     # Fetch all tariffs for display
     all_tariffs = Tariff.objects.all()
@@ -129,21 +130,21 @@ def tariff_list(request):
 
 
 
-@login_required
+@sdo_required
 def all_bills(request):
     # Fetch all bills from the database
     bills = Bill.objects.all()
     title="All Bills"
     return render(request, 'sdo/all_bills.html', {'bills': bills, 'title':title})
 
-@login_required
+@sdo_required
 def paid_bills(request):
     # Fetch paid bills from the database
     bills = Bill.objects.filter(paid=True)
     title='Paid Bills'
     return render(request, 'sdo/all_bills.html', {'bills': bills, 'title':title})
 
-@login_required
+@sdo_required
 def unpaid_bills(request):
     # Fetch unpaid bills from the database
     bills = Bill.objects.filter(paid=False)
@@ -151,7 +152,7 @@ def unpaid_bills(request):
     return render(request, 'sdo/all_bills.html', {'bills': bills, 'title':title})
 
 
-@login_required
+@sdo_required
 def sdo_dashboard_show_details(request):
     # Count total consumers
     total_consumers = Consumer.objects.all()
@@ -171,7 +172,7 @@ from django.contrib import messages
 from .models import Tariff
 from .forms import TariffForm  # Assuming you create a TariffForm
 
-@login_required
+@sdo_required
 def create_or_update_tariff(request):
     if request.method == 'POST':
         form = TariffForm(request.POST)
@@ -200,7 +201,7 @@ def create_or_update_tariff(request):
 
 
 # View to show the SDO profile
-@login_required
+@sdo_required
 def sdo_profile_view(request):
     try:
         sdo_profile_instance = sdo_profile.objects.filter(user=request.user).first()
@@ -208,7 +209,7 @@ def sdo_profile_view(request):
     except:
         return redirect('SDO:create_sdo_profile')  # Render the profile view if the SDO profile does not exist
 
-@login_required
+@sdo_required
 def edit_sdo_profile_view(request):
     sdo_profile_instance = get_object_or_404(sdo_profile, user=request.user)
     
@@ -222,7 +223,7 @@ def edit_sdo_profile_view(request):
     
     return render(request, 'sdo/edit_sdo_profile.html', {'form': form})
 
-@login_required
+@sdo_required
 def create_sdo_profile_view(request):
     if request.method == 'POST':
         form = SDOProfileCreateForm(request.POST)
@@ -237,7 +238,7 @@ def create_sdo_profile_view(request):
 # views.py
 
 
-@login_required
+@sdo_required
 def create_user(request):
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)

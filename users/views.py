@@ -77,9 +77,16 @@ def user_login(request):
         if form.is_valid():
             username = form.cleaned_data.get('username')
             password = form.cleaned_data.get('password')
+            remember_me = request.POST.get('remember_me')  # Get remember me checkbox value
             user = authenticate(request, username=username, password=password)
             if user is not None:
                 login(request, user)
+                if remember_me:
+                # Set session to expire in 2 weeks (1209600 seconds)
+                    request.session.set_expiry(1209600)
+                else:
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             # Session expires when browser is closed
+                    request.session.set_expiry(0)
                 return redirect_to_dashboard(user)  # Redirect user based on role
             else:
                 return render(request, 'users/login.html', {'form': form, 'error': 'Invalid username or password'})

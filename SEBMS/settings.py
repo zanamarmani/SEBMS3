@@ -162,3 +162,6 @@ JAZZCASH_INTEGRITY_SALT = 'YOUR_SANDBOX_INTEGRITY_SALT'
 LOGIN_URL = 'login'  
 
 LOGOUT_REDIRECT_URL = '/login/'
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

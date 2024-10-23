@@ -1,0 +1,375 @@
+
+                                        <style>
+                                            body {
+                                                background: #fff;
+                                            }
+
+                                            form {
+                                                margin: 0;
+                                                padding: 0;
+                                            }
+
+                                            .jsformWrapper {
+                                                border: 1px solid rgba(196, 21, 28, 0.50);
+                                                padding: 2rem;
+                                                width: 600px;
+                                                margin: 0 auto;
+                                                border-radius: 2px;
+                                                margin-top: 2rem;
+                                                box-shadow: 0 7px 5px #eee;
+                                                height: 350px;
+                                            }
+
+                                                .jsformWrapper .formFielWrapper label {
+                                                    width: 300px;
+                                                    float: left;
+                                                }
+
+                                                .jsformWrapper .formFielWrapper input {
+                                                    width: 300px;
+                                                    padding: 0.5rem;
+                                                    border: 1px solid #ccc;
+                                                    float: left;
+                                                    font-family: sans-serif;
+                                                }
+
+                                                .jsformWrapper .formFielWrapper {
+                                                    float: left;
+                                                    margin-bottom: 1rem;
+                                                }
+
+                                                .jsformWrapper button {
+                                                    background: rgba(196, 21, 28, 1);
+                                                    border: none;
+                                                    color: #fff;
+                                                    width: 120px;
+                                                    height: 40px;
+                                                    line-height: 25px;
+                                                    font-size: 16px;
+                                                    font-family: sans-serif;
+                                                    text-transform: uppercase;
+                                                    border-radius: 2px;
+                                                    cursor: pointer;
+                                                }
+
+                                            h3 {
+                                                text-align: center;
+                                                margin-top: 3rem;
+                                                color: rgba(196, 21, 28, 1);
+                                            }
+                                            _msg{
+                                                background-color: yellow;
+                                                font-size: 14px;
+
+
+                                            }
+
+                                            div#textAreaforMarkupWrapper .browser-default {
+                                                margin-top: 3.5rem;
+                                                width: 100%;
+                                            }
+
+
+
+                                            /** Custom Select **/
+                                            .custom-select-wrapper {
+                                                position: relative;
+                                                user-select: none;
+                                            }
+
+                                                .custom-select-wrapper select {
+                                                    display: none;
+                                                }
+
+                                            .custom-select {
+                                                position: relative;
+                                                display: inline-block;
+                                            }
+
+                                            .custom-select-trigger {
+                                                position: relative;
+                                                display: block;
+                                                padding: 0 84px 0 22px;
+                                                font-size: 19px;
+                                                box-shadow: 0 2px 6px rgb(0 0 0 / 16%);
+                                                font-weight: 500;
+                                                letter-spacing: 0.3px;
+                                                color: #fff;
+                                                line-height: 55px;
+                                                background: rgb(245,158,79);
+                                                background: linear-gradient( 90deg,rgba(245,158,79,1) 0%,rgba(226,146,73,1) 16%,rgba(237,105,82,1) 100%);
+                                                border-radius: 4px;
+                                                cursor: pointer;
+                                            }
+
+                                                .custom-select-trigger:after {
+                                                    position: absolute;
+                                                    display: block;
+                                                    content: '';
+                                                    width: 10px;
+                                                    height: 10px;
+                                                    top: 50%;
+                                                    right: 25px;
+                                                    margin-top: -3px;
+                                                    border-bottom: 1px solid #fff;
+                                                    border-right: 1px solid #fff;
+                                                    transform: rotate(45deg) translateY(-50%);
+                                                    transition: all .4s ease-in-out;
+                                                    transform-origin: 50% 0;
+                                                }
+
+                                            .custom-select.opened .custom-select-trigger:after {
+                                                margin-top: 3px;
+                                                transform: rotate(-135deg) translateY(-50%);
+                                            }
+
+                                            .custom-options {
+                                                position: absolute;
+                                                background: #fff;
+                                                margin: 0;
+                                                width: 100%;
+                                                display: block;
+                                                /* border-bottom: 1px solid #b5b5b5; */
+                                                font-size: 15px;
+                                                font-weight: 300;
+                                                color: #9e9e9e;
+                                                line-height: 46px;
+                                                cursor: pointer;
+                                                letter-spacing: 0.5px;
+                                                transition: all .4s ease-in-out;
+                                                opacity: 0;
+                                                visibility: hidden;
+                                                pointer-events: none;
+                                                transform: translateY(-15px);
+                                            }
+
+                                            .custom-select.opened .custom-options {
+                                                opacity: 1;
+                                                visibility: visible;
+                                                pointer-events: all;
+                                                transform: translateY(0);
+                                                z-index: 9;
+                                            }
+
+                                            .custom-options:before {
+                                                position: absolute;
+                                                display: block;
+                                                content: '';
+                                                bottom: 100%;
+                                                right: 25px;
+                                                width: 7px;
+                                                height: 7px;
+                                                margin-bottom: -4px;
+                                                border-top: 1px solid #b5b5b5;
+                                                border-left: 1px solid #b5b5b5;
+                                                background: #fff;
+                                                transform: rotate(45deg);
+                                                transition: all .4s ease-in-out;
+                                            }
+
+                                            .option-hover:before {
+                                                background: #f9f9f9;
+                                            }
+
+                                            .custom-option {
+                                                position: relative;
+                                                display: block;
+                                                padding: 0 22px;
+                                                border-bottom: 1px solid #b5b5b5;
+                                                font-size: 15px;
+                                                font-weight: 400;
+                                                color: #9e9e9e;
+                                                line-height: 49px;
+                                                cursor: pointer;
+                                                letter-spacing: 0.5px;
+                                                transition: all .4s ease-in-out;
+                                            }
+
+                                                .custom-option:first-of-type {
+                                                    border-radius: 4px 4px 0 0;
+                                                }
+
+                                                .custom-option:last-of-type {
+                                                    border-bottom: 0;
+                                                    border-radius: 0 0 4px 4px;
+                                                }
+
+                                                .custom-option:hover,
+                                                .custom-option.selection {
+                                                    background: #f9f9f9;
+                                                }
+
+                                            .custom-select .otcgrp {
+                                                font-weight: 600;
+                                                font-size: 16px;
+                                            }
+
+                                            .custom-select .othersgrp {
+                                                font-weight: 600;
+                                                font-size: 16px;
+                                            }
+
+                                            label#selectLabel {
+                                                top: -25px;
+                                                /* position: relative; */
+                                            }
+                                        </style>
+                                        <script>
+                                            function submitForm() {
+
+                                                CalculateHash();
+                                                var IntegritySalt = document.getElementById("salt").innerText;
+                                                var hash = CryptoJS.HmacSHA256(document.getElementById("hashValuesString").value, IntegritySalt);
+                                                document.getElementsByName("pp_SecureHash")[0].value = hash + '';
+
+                                                console.log('string: ' + hashString);
+                                                console.log('hash: ' + document.getElementsByName("pp_SecureHash")[0].value);
+
+                                                document.jsform.submit();
+                                            }
+
+
+
+                                        </script>
+                                        <script src="https://sandbox.jazzcash.com.pk/Sandbox/Scripts/hmac-sha256.js"></script>
+
+                                        <h3>JazzCash HTTP POST (Page Redirection) Testing</h3>
+                                        <div class="jsformWrapper">
+                                            <form name="jsform" method="post" action="https://sandbox.jazzcash.com.pk/CustomerPortal/transactionmanagement/merchantform/">
+                                                <input type="hidden" name="pp_Version" value="1.1">
+                                                <!-- <input type="hidden" name="pp_TxnType" value=""> -->
+                                                <input type="hidden" name="pp_Language" value="EN">
+                                                <input type="hidden" name="pp_MerchantID" value="MC130523">
+                                                <input type="hidden" name="pp_SubMerchantID" value="">
+                                                <input type="hidden" name="pp_Password" value="8etez13esg">
+                                                <input type="hidden" name="pp_BankID" value="TBANK">
+                                                <input type="hidden" name="pp_ProductID" value="RETL">
+
+                                                <div class="formFielWrapper">
+                                                    <label class="active">pp_TxnRefNo: </label>
+                                                    <input type="text" name="pp_TxnRefNo" id="pp_TxnRefNo" value="T20241017202544">
+                                                </div>
+
+                                                <div class="formFielWrapper">
+                                                    <label class="active">pp_Amount: </label>
+                                                    <input type="text" name="pp_Amount" value="{{bill.payableamount}}">
+                                                </div>
+
+                                                <input type="hidden" name="pp_TxnCurrency" value="PKR">
+                                                <input type="hidden" name="pp_TxnDateTime" value="20241017202544">
+                                                <div class="formFielWrapper">
+                                                    <label class="active">pp_BillReference: </label>
+                                                    <input type="text" name="pp_BillReference" value="billRef">
+                                                </div>
+
+                                                <div class="formFielWrapper">
+                                                    <label class="active">pp_Description: </label>
+                                                    <input type="text" name="pp_Description" value="Description of transaction">
+                                                </div>
+
+                                                <input type="hidden" name="pp_TxnExpiryDateTime" value="20241018202544">
+
+                                                <div class="formFielWrapper">
+                                                    <label class="active">pp_ReturnURL: </label>
+                                                    <input type="text" name="pp_ReturnURL" value="https://1234abcd.ngrok.io/payment/success/">
+                                                </div>
+
+                                                <input type="hidden" name="pp_SecureHash" value="">
+                                                <input type="hidden" name="ppmpf_1" value="1">
+                                                <input type="hidden" name="ppmpf_2" value="2">
+                                                <input type="hidden" name="ppmpf_3" value="3">
+                                                <input type="hidden" name="ppmpf_4" value="4">
+                                                <input type="hidden" name="ppmpf_5" value="5">
+                                                <button type="button" onclick="submitForm()">Submit</button>
+                                            </form>
+
+                                            <label id="salt" style="display:none;">54zgtgdse9</label>
+                                            <br><br>
+                                            <div class="formFielWrapper">
+                                                <label class="">Hash values string: </label>
+                                                <input type="text" id="hashValuesString" value="">
+                                                <br><br>
+                                            </div>
+
+                                        </div>
+
+                                        <script>
+                                            function CalculateHash() {
+                                                var IntegritySalt = document.getElementById("salt").innerText;
+                                                hashString = '';
+
+                                                hashString += IntegritySalt + '&';
+
+                                                if (document.getElementsByName("pp_Amount")[0].value != '') {
+                                                    hashString += document.getElementsByName("pp_Amount")[0].value + '&';
+                                                }
+                                                if (document.getElementsByName("pp_BankID")[0].value != '') {
+                                                    hashString += document.getElementsByName("pp_BankID")[0].value + '&';
+                                                }
+                                                if (document.getElementsByName("pp_BillReference")[0].value != '') {
+                                                    hashString += document.getElementsByName("pp_BillReference")[0].value + '&';
+                                                }
+                                                if (document.getElementsByName("pp_Description")[0].value != '') {
+                                                    hashString += document.getElementsByName("pp_Description")[0].value + '&';
+                                                }
+                                                if (document.getElementsByName("pp_Language")[0].value != '') {
+                                                    hashString += document.getElementsByName("pp_Language")[0].value + '&';
+                                                }
+                                                if (document.getElementsByName("pp_MerchantID")[0].value != '') {
+                                                    hashString += document.getElementsByName("pp_MerchantID")[0].value + '&';
+                                                }
+                                                if (document.getElementsByName("pp_Password")[0].value != '') {
+                                                    hashString += document.getElementsByName("pp_Password")[0].value + '&';
+                                                }
+                                                if (document.getElementsByName("pp_ProductID")[0].value != '') {
+                                                    hashString += document.getElementsByName("pp_ProductID")[0].value + '&';
+                                                }
+                                                if (document.getElementsByName("pp_ReturnURL")[0].value != '') {
+                                                    hashString += document.getElementsByName("pp_ReturnURL")[0].value + '&';
+                                                }
+                                                if (document.getElementsByName("pp_SubMerchantID")[0].value != '') {
+                                                    hashString += document.getElementsByName("pp_SubMerchantID")[0].value + '&';
+                                                }
+                                                if (document.getElementsByName("pp_TxnCurrency")[0].value != '') {
+                                                    hashString += document.getElementsByName("pp_TxnCurrency")[0].value + '&';
+                                                }
+                                                if (document.getElementsByName("pp_TxnDateTime")[0].value != '') {
+                                                    hashString += document.getElementsByName("pp_TxnDateTime")[0].value + '&';
+                                                }
+                                                if (document.getElementsByName("pp_TxnExpiryDateTime")[0].value != '') {
+                                                    hashString += document.getElementsByName("pp_TxnExpiryDateTime")[0].value + '&';
+                                                }
+                                                if (document.getElementsByName("pp_TxnRefNo")[0].value != '') {
+                                                    hashString += document.getElementsByName("pp_TxnRefNo")[0].value + '&';
+                                                }
+                                                <!-- if (document.getElementsByName("pp_TxnType")[0].value != '') { -->
+                                                    <!-- hashString += document.getElementsByName("pp_TxnType")[0].value + '&'; -->
+                                                <!-- } -->
+                                                if (document.getElementsByName("pp_Version")[0].value != '') {
+                                                    hashString += document.getElementsByName("pp_Version")[0].value + '&';
+                                                }
+                                                if (document.getElementsByName("ppmpf_1")[0].value != '') {
+                                                    hashString += document.getElementsByName("ppmpf_1")[0].value + '&';
+                                                }
+                                                if (document.getElementsByName("ppmpf_2")[0].value != '') {
+                                                    hashString += document.getElementsByName("ppmpf_2")[0].value + '&';
+                                                }
+                                                if (document.getElementsByName("ppmpf_3")[0].value != '') {
+                                                    hashString += document.getElementsByName("ppmpf_3")[0].value + '&';
+                                                }
+                                                if (document.getElementsByName("ppmpf_4")[0].value != '') {
+                                                    hashString += document.getElementsByName("ppmpf_4")[0].value + '&';
+                                                }
+                                                if (document.getElementsByName("ppmpf_5")[0].value != '') {
+                                                    hashString += document.getElementsByName("ppmpf_5")[0].value + '&';
+                                                }
+
+                                                hashString = hashString.slice(0, -1);
+                                                document.getElementById("hashValuesString").value = hashString;
+                                            }
+
+                                        </script>
+
+                                    
+
+                                    

@@ -25,6 +25,7 @@
 												<th>Last Reading</th>
 												<th>New Reading</th>
 												<th>Processed</th>
+                                                <th>Meter Image</th>
 											  </tr>
                                         </thead>
                                         <tbody>
@@ -36,6 +37,11 @@
 													  <td>{{ meter.last_reading }}</td>
 													  <td>{{ meter.new_reading }}</td>
 													  <td>{{meter.processed}}</td>
+                                                      <td>{% if meter.meter_image %}
+                                                        <img src="{{ meter.meter_image.url }}" alt="Meter Image" width="100" />
+                                                    {% else %}
+                                                        No Image Available
+                                                    {% endif %}</td>
 													</tr>
 													{% endfor %}
                                                 </tbody>

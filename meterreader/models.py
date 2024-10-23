@@ -23,7 +23,7 @@ class MeterReading(models.Model):
     meter_status = models.BooleanField(default=True, null=True)  # Active (True) or Not (False)
     processed = models.BooleanField(default=False, null=True)
     reading_date = models.DateField(null=True)
-    meter_image = models.ImageField(null=True)
+    meter_image = models.ImageField(upload_to='meter_images/', blank=True, null=True)
 
     def __str__(self):
         return f"Meter: {self.meter.meter_number}, Reading: {self.new_reading}"

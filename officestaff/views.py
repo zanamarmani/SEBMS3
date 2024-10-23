@@ -1,10 +1,14 @@
 from decimal import Decimal
+from msilib.schema import File
+import os
+from tempfile import NamedTemporaryFile
 from django.shortcuts import render
 
 # Create your views here.
 
 
 from django.http import HttpResponse
+import urllib
 from SDO.models import Tariff
 
 from consumer.forms import ConsumerRegistrationForm
@@ -14,11 +18,13 @@ from meterreader.models import Meter, MeterReading
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
 from django.contrib import messages
+from officestaff.forms import OfficeStaffForm
 from officestaff.models import OfficeStaff
+from officestaff.utils import officestaff_required
 from users.models import User
 
 from bill.models import Bill
-from SDO.utills import calculate_bill
+
 from datetime import date, datetime, timedelta
 from django.core.mail import send_mail
 
@@ -29,6 +35,7 @@ from django.contrib.auth.decorators import login_required
 
 from bill.views import calculate_amount_due
 
+@officestaff_required
 def Home(request):
     consumers = Consumer.objects.all()# Fetch all consumers from the database
     tariff = Tariff.objects.first()  
@@ -42,17 +49,23 @@ def Home(request):
     return render(request, 'officeStaffHome.html', {'consumers': consumers,'consumers1':consumers1,'total_office_staff':office_staffs,'bills':bills,'total_meter_reader':meter_readers})
 
   
+@officestaff_required
 def RegisterConsumer(request):
     tariffs=Tariff.tariff_type
     return render(request, 'RegisterConsumer.html',{'tariffs':tariffs})
 # officeStaff/views.py
 
 
+@officestaff_required
 def register_consumer(request):
     if request.method == 'POST':
         form = ConsumerRegistrationForm(request.POST)
         if form.is_valid():
-            form.save()
+            try:
+             form.save()
+            except:
+                messages.error(request, 'Failed to Register Consumer try again with different email')
+                return redirect('officestaff:registerconsumer')  # Redirect to a success page or desired location
             return redirect('officestaff:home')  # Redirect to a success page or desired location
         else:
             messages.error(request, 'Failed to Register try different email or consumer number')
@@ -61,133 +74,105 @@ def register_consumer(request):
 
     return render(request, 'RegisterConsumer.html', {'form': form})
 
-
+@officestaff_required
 def list_consumers(request):
-    consumers = Consumer.objects.all()
+    bill = Bill.objects.all()
     title="consumer"
-    return render(request, 'list_consumers.html', {'consumers': consumers,'title':title})
+    return render(request, 'list_consumers.html', {'bill': bill,'title':title})
 
-
+@officestaff_required
 def all_readings(request):
     readings = MeterReading.objects.all()
     title ="All Readings"
     return render(request, 'all_readings.html', {'readings': readings,'title':title})
 
-def generate_bill(request, meter_number):
-    """
-    View to generate a bill for a specific consumer based on meter readings.
-    """
-    consumer = get_object_or_404(Consumer, meter_number=meter_number)
-    reading = Meter.objects.filter(meter_number=meter_number).last()  # Get the latest reading
 
-    if not reading:
-        messages.error(request, "No meter reading found for this consumer.")
-        return redirect('officestaff:consumer_list')
-
-    consumed_units = reading.new_reading - reading.last_reading
-    if consumed_units < 0:
-        messages.error(request, "Consumed units cannot be negative. Please check meter readings.")
-        return redirect('officestaff:consumer_list')
-
-    # Get the consumer's tariff and calculate the bill
-    tariff = Tariff.objects.filter(tariff_type=consumer.tariff).first()
-    if not tariff:
-        messages.error(request, "Tariff not found for this consumer.")
-        return redirect('officestaff:list_consumers')
-
-    bill_amount = calculate_bill(consumed_units, tariff)
-
-    # Create a new Bill entry for the current month
-    bill = Bill.objects.create(
-        consumer=consumer,
-        month=date.today(),  # Current month
-        amount_due=bill_amount,
-        consumed_units=consumed_units,
-        paid=False
-    )
-
-    messages.success(request, f'Bill for consumer {consumer.name} has been generated successfully!')
-    return redirect('officestaff:all_readings')
-
+@officestaff_required
 def Get_All_Readings(request):
     # Fetch meter readings from Firebase
     meter_readings = fetch_meter_list()
     # Fetch all bills to display on the dashboard
     title="Meter Readings"
     return render(request, 'all_readings.html', {'meter_readings': meter_readings, 'title':title})
-
+@officestaff_required
 def save_meter_data_to_db(request):
-    """
-    Fetch the meter data from Firebase and save it to the local database.
-    """
-    # Fetch meter data from Firebase
     meter_data_list = fetch_meter_list()
 
-    # Process and save each meter reading into the local database
     for meter_data in meter_data_list:
-        meter_serial_no = meter_data.get('serial_no', None)  # Serial number of the meter
-        date_str = meter_data.get('date', None)  # Date string
-        reading = meter_data.get('reading', None)  # Meter reading value
+        date_str = meter_data.get('date', None)
+        meter_serial_no = meter_data.get('serial_no', None)
+        meter_image_url = meter_data.get('meterImage', None)
+        reading = meter_data.get('reading', None)
+        status = meter_data.get('isActive', False)
 
-        if not meter_serial_no or not date_str or not reading:
-            continue  # Skip if required data is missing
+        if not date_str or not meter_serial_no or not reading:
+            continue  # Skip if essential data is missing
 
-        # Convert date from string to Python date object
         try:
             date_obj = datetime.strptime(date_str, '%Y-%m-%d').date()
-        except ValueError:
-            continue  # Skip this entry if date is invalid
+            reading = int(round(float(reading)))
+        except (ValueError, TypeError):
+            continue  # Skip if data is invalid
 
-        try:
-            reading = float(reading)  # Convert the reading to float
-        except ValueError:
-            continue  # Skip this entry if reading is invalid
-
-        reading = int(round(reading))  # Round and convert to integer
-
-        # Retrieve or create the Meter object based on the serial number
+        # Get or skip if the meter doesn't exist
         meter = Meter.objects.filter(meter_number=meter_serial_no).first()
         if not meter:
-            continue  # If the meter doesn't exist, skip this entry
+            continue
 
-        # Check if the reading for this meter on this date already exists
+        # Check if the reading already exists
         if MeterReading.objects.filter(meter=meter, reading_date=date_obj).exists():
-            continue  # Skip if the reading already exists for this meter on this date
+            continue
 
-        # Retrieve the last reading for this meter using filter() and order by the most recent reading
+        # Download the image from Firebase if available
+        if meter_image_url:
+            try:
+                img_temp = NamedTemporaryFile(delete=True)
+                urllib.request.urlretrieve(meter_image_url, img_temp.name)
+                image_file = File(img_temp)
+                image_filename = os.path.basename(meter_image_url)
+            except Exception as e:
+                print(f"Failed to download image: {e}")
+                image_file = None
+        else:
+            image_file = None
+
+        # Get the last reading, default to 500 if no prior readings exist
         last_reading_record = MeterReading.objects.filter(meter=meter).order_by('-reading_date').first()
+        last_reading = last_reading_record.new_reading if last_reading_record else 500
 
-        last_reading = last_reading_record.new_reading if last_reading_record else 500  # Default last reading if no previous record
-
-        # Save the new MeterReading
+        # Save the new reading
         meter_reading = MeterReading.objects.create(
             meter=meter,
             last_reading=last_reading,
             new_reading=reading,
+            meter_status=status,
             reading_date=date_obj,
             processed=False
         )
 
-    # After saving, retrieve the saved data to display it
+        # Save the image if it exists
+        if image_file:
+            meter_reading.meter_image.save(image_filename, image_file)
+            meter_reading.save()
+
+    # Retrieve saved data to display in the template
     meter_list = MeterReading.objects.all()
-    title = " Fetched Meter Readings"
-    # Render the template with the saved meter data
-    return render(request, 'meter_data.html', {'meter_list': meter_list ,'title': title})
+    return render(request, 'meter_data.html', {'meter_list': meter_list})
 
 # views.py
-
+@officestaff_required
 def all_bills(request):
     # Fetch all bills from the database
     bills = Bill.objects.all()
     title="All Bills"
     return render(request, 'all_bills.html', {'bills': bills, 'title':title})
-
+@officestaff_required
 def paid_bills(request):
     # Fetch paid bills from the database
     bills = Bill.objects.filter(paid=True)
     title="Paid Bills"
     return render(request, 'paid_bills.html', {'paid_bills': bills,'title':title})
-
+@officestaff_required
 def unpaid_bills(request):
     # Fetch unpaid bills from the database
     bills = Bill.objects.filter(paid=False)
@@ -195,6 +180,7 @@ def unpaid_bills(request):
     return render(request, 'unpaid_bills.html', {'unpaid_bills': bills,'title':title})
 from django.views.generic import ListView
 
+@officestaff_required
 class TariffListView(ListView):
     model = Tariff
     template_name = 'register_consumer.html'  # Path to your template
@@ -204,6 +190,7 @@ class TariffListView(ListView):
         return Tariff.objects.all()
     
 
+@officestaff_required
 def Generate_bill(request):
     # Get all unprocessed meter readings
     meter_readings = MeterReading.objects.filter(processed=False)
@@ -265,16 +252,55 @@ def Generate_bill(request):
     })
 
 
-def show_profile(request):
-    profile = get_object_or_404(OfficeStaff, user = request.user)
-    return render(request, 'staff_profile.html', {'profile': profile})
+@officestaff_required
+def show_profile(request): 
+    try:
+        profile = OfficeStaff.objects.filter(user = request.user).first()
+        return render(request, 'staff_profile.html', {'profile': profile})
+    except:
+        return redirect('officestaff:create_office_staff_profile')
 
 
-def update_office_staff_profile(request, pk):
+@officestaff_required
+def create_office_staff_profile(request):
+    # Check if the logged-in user already has a profile
+    office_staff = OfficeStaff.objects.filter(user=request.user).first()
+    
+    if office_staff:
+        messages.warning(request, "You already have a profile.")
+        return render(request,'staff_profile.html',{'profile':office_staff})  # Redirect to list if profile exists
 
-    return render(request, 'update_office_staff_profile.html')
+    if request.method == 'POST':
+        form = OfficeStaffForm(request.POST)
+        if form.is_valid():
+            # Save the form without committing to associate it with the user
+            office_staff = form.save(commit=False)
+            office_staff.user = request.user  # Set the logged-in user
+            office_staff.save()  # Save the profile
+            messages.success(request, "Office staff profile created successfully.")
+            return redirect('officestaff:show_profile')  # Redirect to a list or detail page
+    else:
+        form = OfficeStaffForm()
+
+    return render(request, 'create_office_staff.html', {'form': form})
+
+@officestaff_required
+def edit_office_staff(request):
+    # Retrieve the specific OfficeStaff instance or return 404 if not found
+    office_staff = OfficeStaff.objects.filter(user= request.user).first()
+
+    if request.method == 'POST':
+        form = OfficeStaffForm(request.POST, instance=office_staff)  # Bind the form with existing data
+        if form.is_valid():
+            form.save()
+            return redirect('officestaff:show_profile')  # Redirect to a list or detail view
+    else:
+        form = OfficeStaffForm(instance=office_staff)  # Load the form with the current data
+
+    return render(request, 'edit_office_staff.html', {'form': form, 'office_staff': office_staff})
 
 
+@officestaff_required
 def delete_unapproved_consumer(request, pk):
     # Fetch the consumer by their primary key (id) and ensure they are unapproved
     try:
@@ -298,6 +324,7 @@ def delete_unapproved_consumer(request, pk):
     # Redirect to a list or dashboard after deletion
     return redirect('officestaff:list_consumers') 
 
+@officestaff_required
 def assign_meter_view(request):
     consumer = None
     error = None
@@ -334,3 +361,11 @@ def assign_meter_view(request):
         form = MeterAssignmentForm()
 
     return render(request, 'assign_meter.html', {'form': form, 'consumer': consumer, 'error': error})
+
+
+@officestaff_required
+def consumer_profile(request, consumer_id):
+    # Get the consumer profile based on the ID passed in the URL
+    consumer = get_object_or_404(Consumer, id=consumer_id)
+    
+    return render(request, 'profile_consumer.html',{'consumer':consumer})
