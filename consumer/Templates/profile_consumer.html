@@ -97,8 +97,8 @@
                     <div class="card-body text-center">
                         <img src="https://bootdey.com/img/Content/avatar/avatar7.png" alt="Admin" class="rounded-circle" width="150">
                         <div class="mt-3">
-                            <h4>{{ consumer.consumer_name }}</h4>
-                            <p class="text-secondary mb-1">{%if consumer.approved %}
+                            <h4>{{ bill.meter.consumer.consumer_name }}</h4>
+                            <p class="text-secondary mb-1">{%if bill.meter.consumer.approved %}
                                 Registered Consumer
                                 {% else %}
                                 Approval Pending
@@ -170,7 +170,7 @@
                             <div class="col-sm-3">
                                 <h6 class="mb-0">Full Name</h6>
                             </div>
-                            <div class="col-sm-9 text-secondary">{{ consumer.consumer_name }}</div>
+                            <div class="col-sm-9 text-secondary">{{ bill.meter.consumer.consumer_name }}</div>
                         </div>
                         <hr>
                         <div class="row">
@@ -186,21 +186,21 @@
                             <div class="col-sm-3">
                                 <h6 class="mb-0">Consumer Number</h6>
                             </div>
-                            <div class="col-sm-9 text-secondary">{{ consumer.consumer_number }}</div>
+                            <div class="col-sm-9 text-secondary">{{ bill.meter.consumer.consumer_number }}</div>
                         </div>
                         <hr>
                         <div class="row">
                             <div class="col-sm-3">
                                 <h6 class="mb-0">Address</h6>
                             </div>
-                            <div class="col-sm-9 text-secondary">{{ consumer.consumer_address }}</div>
+                            <div class="col-sm-9 text-secondary">{{ bill.meter.consumer.consumer_address }}</div>
                         </div>
                         <hr>
                         <div class="row">
                             <div class="col-sm-3">
                                 <h6 class="mb-0">Tariff</h6>
                             </div>
-                            <div class="col-sm-9 text-secondary">{{ consumer.consumer_tariff }}</div>
+                            <div class="col-sm-9 text-secondary">{{ bill.meter.consumer.consumer_tariff }}</div>
                         </div>
                     </div>
                 </div>
@@ -208,30 +208,28 @@
                 <!-- Replaced Project Status with a Table -->
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title">Consumer Overview</h5>
+                        <h5 class="card-title">Bill Overview</h5>
                         <table class="custom-table">
                             <thead>
                                 <tr>
-                                    <th>Bill Date</th>
-                                    <th>Amount</th>
-                                    <th>Status</th>
+                                    <th>Meter Number</th>
+                                    <th>Unit Consumed in Current Month</th>
+                                    <th>Payable Amount</th>
+                                    <th>Paid Status</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>01-10-2024</td>
-                                    <td>$120</td>
-                                    <td>Paid</td>
-                                </tr>
-                                <tr>
-                                    <td>01-09-2024</td>
-                                    <td>$140</td>
-                                    <td>Unpaid</td>
-                                </tr>
-                                <tr>
-                                    <td>01-08-2024</td>
-                                    <td>$110</td>
-                                    <td>Paid</td>
+                                    <td>{{bill.meter.meter_number}}</td>
+                                    <td>{{bill.unitsconsumed}}</td>
+                                    <td>{{bill.payableamount}}</td>
+                                    <td>
+                                    {% if bill.paid %}
+                                        Paid
+                                        {% else %}
+                                        Unpaid
+                                    {% endif %}
+                                        </td>
                                 </tr>
                             </tbody>
                         </table>

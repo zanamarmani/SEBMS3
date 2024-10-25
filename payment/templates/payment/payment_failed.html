@@ -1,16 +1,17 @@
-<!-- payment/success.html -->
+<!-- payment/failed.html -->
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Payment Success</title>
+    <title>Payment Failed</title>
 </head>
 <body>
-    <h1>Payment Successful!</h1>
-    <p>Thank you for your payment.</p>
+    <h1>Payment Failed</h1>
+    <p>We were unable to process your payment.</p>
     <p>Transaction Reference: {{ txn_ref }}</p>
-    <p>Amount Paid: {{ amount }}</p>
+    <p>{{ message }}</p>
+    <p>payment status {{status}}</p>
 </body>
 </html>

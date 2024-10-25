@@ -1,4 +1,6 @@
 
+                                       
+                                        
                                         <style>
                                             body {
                                                 background: #fff;
@@ -247,16 +249,16 @@
 
                                                 <div class="formFielWrapper">
                                                     <label class="active">pp_TxnRefNo: </label>
-                                                    <input type="text" name="pp_TxnRefNo" id="pp_TxnRefNo" value="T20241017202544">
+                                                    <input type="text" name="pp_TxnRefNo" id="pp_TxnRefNo" value="{{pp_txn_ref_no}}">
                                                 </div>
 
                                                 <div class="formFielWrapper">
                                                     <label class="active">pp_Amount: </label>
-                                                    <input type="text" name="pp_Amount" value="{{bill.payableamount}}">
+                                                    <input type="text" name="pp_Amount" value="1000">
                                                 </div>
 
                                                 <input type="hidden" name="pp_TxnCurrency" value="PKR">
-                                                <input type="hidden" name="pp_TxnDateTime" value="20241017202544">
+                                                <input type="hidden" name="pp_TxnDateTime" value="{{txn_date_time}}">
                                                 <div class="formFielWrapper">
                                                     <label class="active">pp_BillReference: </label>
                                                     <input type="text" name="pp_BillReference" value="billRef">
@@ -267,15 +269,15 @@
                                                     <input type="text" name="pp_Description" value="Description of transaction">
                                                 </div>
 
-                                                <input type="hidden" name="pp_TxnExpiryDateTime" value="20241018202544">
+                                                <input type="hidden" name="pp_TxnExpiryDateTime" value="{{txn_expiry_date_time}}">
 
                                                 <div class="formFielWrapper">
                                                     <label class="active">pp_ReturnURL: </label>
-                                                    <input type="text" name="pp_ReturnURL" value="https://a7a1-118-107-134-250.ngrok-free.app/payment/success/">
+                                                    <input type="text" name="pp_ReturnURL" value="https://redbird-natural-albacore.ngrok-free.app/payment/success/">
                                                 </div>
 
                                                 <input type="hidden" name="pp_SecureHash" value="">
-                                                <input type="hidden" name="ppmpf_1" value="1">
+                                                <input type="hidden" name="ppmpf_1" value="03122036440">
                                                 <input type="hidden" name="ppmpf_2" value="2">
                                                 <input type="hidden" name="ppmpf_3" value="3">
                                                 <input type="hidden" name="ppmpf_4" value="4">

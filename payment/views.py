@@ -58,9 +58,42 @@ def jazzcash_payment(request, bill_id):
         return render(request, 'payment_failed.html', {'error': response.text})
 
 
+
+from django.shortcuts import render
+from django.http import HttpResponse
+from django.views.decorators.csrf import csrf_exempt
+
+@csrf_exempt
 def payment_success(request):
-    # Update bill status based on returned transaction details
-    return render(request, 'payment_success.html')
+    # You can process the data sent back from JazzCash, if any
+    # Example: You might want to log the payment or update the database
+
+    # Assuming you get some POST data with the payment status, ref number, etc.
+    if request.method == 'POST':
+        txn_ref = request.POST.get('pp_TxnRefNo')
+        amount = request.POST.get('pp_Amount')
+        payment_status = request.POST.get('pp_ResponseCode')  # Example: JazzCash may send this to indicate success or failure
+
+        
+        if payment_status == '000':  # Example: Assuming '000' means success
+            # Update the payment status in your database
+            # You can also retrieve the related bill and mark it as paid
+            return render(request, 'payment/payment_success.html', {
+                'txn_ref': txn_ref,
+                'amount': amount,
+                'message': 'Payment successful!',
+            })
+        else:
+            # Handle unsuccessful payment
+            return render(request, 'payment/payment_failed.html', {
+                'txn_ref': txn_ref,
+                'message': 'Payment failed. Please try again.',
+                'status': payment_status,
+            })
+    
+    # If the method isn't POST, return a default message
+    return HttpResponse("This is the payment success page. Please use POST for payments.")
+
 
 def payment_failed(request):
     # Show an error page

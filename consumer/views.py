@@ -1,3 +1,4 @@
+import uuid
 from django.shortcuts import render, get_object_or_404, redirect
 from bill.models import Bill
 from consumer.models import Consumer
@@ -6,10 +7,12 @@ from meterreader.models import Meter, MeterReading
 from payment.models import Payment
 from django.contrib import messages
 
+from datetime import datetime, timedelta
 @consumer_required
 def dashboard(request):
     consumer = get_object_or_404(Consumer, user=request.user)
-    return render(request, 'profile_consumer.html', {'consumer': consumer})
+    bill = Bill.objects.filter(meter__consumer=consumer).first()
+    return render(request, 'profile_consumer.html', {'bill': bill})
 # 1. Payment History
 @consumer_required
 def payment_history(request):
@@ -58,10 +61,45 @@ def pay_bills_now(request):
 
 
 
+@consumer_required
 def pay_bill_demo(request):
     consumer = get_object_or_404(Consumer, user=request.user)
     try:
         bill = Bill.objects.filter(meter__consumer=consumer).latest('billmonth')
     except Bill.DoesNotExist:
         bill = None
-    return render(request, 'test.html',{'bill': bill})
+
+    
+    # Example: Generating a unique transaction reference number
+    current_time = datetime.now().strftime('%Y%m%d%H%M%S')
+    
+    # Generate pp_TxnRefNo with a prefix 'T'
+    pp_txn_ref_no = f"T{current_time}"
+    
+    # pp_TxnDateTime is the current time
+    pp_txn_date_time = current_time
+    
+    # pp_TxnExpiryDateTime is 24 hours after the current time
+    pp_txn_expiry_date_time = (datetime.now() + timedelta(days=1)).strftime('%Y%m%d%H%M%S')
+
+    #txn_ref_no = f"T{datetime.now().strftime('%Y%m%d%H%M%S')}{str(uuid.uuid4().hex)[:6]}"
+    pp_amount = 1000  # Amount in minor units (e.g., 1000 = PKR 10.00)
+    pp_currency = 'PKR'  # Currency
+    pp_bill_reference = 'billRef1234'  # Example Bill Reference
+    pp_description = 'Electricity bill payment'  # Transaction Description
+    
+    # Get the current timestamp for txnDateTime and txnExpiryDateTime
+    # txn_date_time = datetime.now().strftime("%Y%m%d%H%M%S")
+    # txn_expiry_date_time = (datetime.now() + timedelta(days=1)).strftime("%Y%m%d%H%M%S")
+
+    # Pass these values to the template
+    context = {
+        'pp_amount': pp_amount,
+        'pp_currency': pp_currency,
+        'txn_date_time': pp_txn_date_time,
+        'txn_expiry_date_time': pp_txn_expiry_date_time,
+        'pp_bill_reference': pp_bill_reference,
+        'pp_description': pp_description,
+        'pp_txn_ref_no': pp_txn_ref_no,
+    }
+    return render(request, 'test2.html',context)

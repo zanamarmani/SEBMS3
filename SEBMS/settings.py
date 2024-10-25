@@ -27,7 +27,8 @@ SECRET_KEY = 'django-insecure-t_u_^6byp$ja42m7a92j%+rmb7wg^nn=8lxb_^i7-xk!%gy-(2
 DEBUG = True
 
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['redbird-natural-albacore.ngrok-free.app', 'localhost', '127.0.0.1']
+
 
 
 # Application definition

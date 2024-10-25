@@ -10,4 +10,5 @@ urlpatterns = [
     path('print_current_bill/', views.print_current_bill, name='print_current_bill'),
     path('pay_bills_now/', views.pay_bills_now, name='pay_bills_now'),
     path('pay_bill_demo/', views.pay_bill_demo, name='pay_bill_demo'),
+
 ]
