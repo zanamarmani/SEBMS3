@@ -25,6 +25,6 @@ urlpatterns = [
     path('', include('users.urls')),
     path('password_reset/', CustomPasswordResetView.as_view(), name='password_reset'),
     
-]
+]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -55,6 +55,7 @@ def download_and_save_image(image_url):
     """
     Downloads an image from the provided URL and saves it to the media/meter_images folder.
     """
+    print(image_url)
     try:
         response = requests.get(image_url)
         print(response)
@@ -72,7 +73,10 @@ def download_and_save_image(image_url):
             with open(file_path, 'rb') as file:
                 return ContentFile(file.read(), filename)
         else:
-            print(f"Failed to download image: {response.status_code}")
+            print(image_url)
+            print(f"Saving image to: {file_path}")
+            print(f"Directory permissions: {oct(os.stat(media_path).st_mode)}")
+            print(f"Failed to download image 123: {response.status_code}")
             return None
     except Exception as e:
         print(f"Error downloading image: {e}")

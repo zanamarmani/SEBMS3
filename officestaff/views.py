@@ -2,6 +2,7 @@ from decimal import Decimal
 from msilib.schema import File
 import os
 from tempfile import NamedTemporaryFile
+from uuid import uuid4
 from django.shortcuts import render
 
 # Create your views here.
@@ -11,6 +12,7 @@ from django.http import HttpResponse
 import urllib
 from SDO.models import Tariff
 
+from SEBMS import settings
 from consumer.forms import ConsumerRegistrationForm
 from consumer.models import Consumer
 from meterreader.forms import MeterAssignmentForm
@@ -34,6 +36,9 @@ from .firebase_utils import fetch_meter_list
 from django.contrib.auth.decorators import login_required
 
 from bill.views import calculate_amount_due
+
+import os
+import urllib.request
 
 @officestaff_required
 def Home(request):
@@ -94,6 +99,7 @@ def Get_All_Readings(request):
     # Fetch all bills to display on the dashboard
     title="Meter Readings"
     return render(request, 'all_readings.html', {'meter_readings': meter_readings, 'title':title})
+
 @officestaff_required
 def save_meter_data_to_db(request):
     meter_data_list = fetch_meter_list()
@@ -114,46 +120,65 @@ def save_meter_data_to_db(request):
         except (ValueError, TypeError):
             continue  # Skip if data is invalid
 
-        # Get or skip if the meter doesn't exist
-        meter = Meter.objects.filter(meter_number=meter_serial_no).first()
-        if not meter:
-            continue
+        try:
+            # Get or skip if the meter doesn't exist
+            meter = Meter.objects.filter(meter_number=meter_serial_no).first()
+            if not meter:
+                continue
 
-        # Check if the reading already exists
-        if MeterReading.objects.filter(meter=meter, reading_date=date_obj).exists():
-            continue
+            # Check if the reading already exists
+            if MeterReading.objects.filter(meter=meter, reading_date=date_obj).exists():
+                continue
 
-        # Download the image from Firebase if available
-        if meter_image_url:
-            try:
-                img_temp = NamedTemporaryFile(delete=True)
-                urllib.request.urlretrieve(meter_image_url, img_temp.name)
-                image_file = File(img_temp)
-                image_filename = os.path.basename(meter_image_url)
-            except Exception as e:
-                print(f"Failed to download image: {e}")
+            # Download the image from Firebase if available
+            
+            if meter_image_url:
+                try:
+                    response = urllib.request.urlopen(meter_image_url)
+                    if response.status == 200:
+                        image_filename = f"{uuid4()}.jpg"
+                        media_path = os.path.join(settings.MEDIA_ROOT, 'meter_images')
+                        os.makedirs(media_path, exist_ok=True)
+                        file_path = os.path.join(media_path, image_filename)
+
+                        with open(file_path, 'wb') as file:
+                            file.write(response.read())
+
+                        with open(file_path, 'rb') as img_file:
+                            image_file = File(img_file, name=image_filename)
+                    else:
+                        image_file = None
+                except Exception as e:
+                    print(f"Failed to download image: {e}")
+                    image_file = None
+            else:
                 image_file = None
-        else:
-            image_file = None
 
-        # Get the last reading, default to 500 if no prior readings exist
-        last_reading_record = MeterReading.objects.filter(meter=meter).order_by('-reading_date').first()
-        last_reading = last_reading_record.new_reading if last_reading_record else 500
+            # Get the last reading, default to 500 if no prior readings exist
+            last_reading_record = MeterReading.objects.filter(meter=meter).order_by('-reading_date').first()
+            last_reading = last_reading_record.new_reading if last_reading_record else 500
 
-        # Save the new reading
-        meter_reading = MeterReading.objects.create(
-            meter=meter,
-            last_reading=last_reading,
-            new_reading=reading,
-            meter_status=status,
-            reading_date=date_obj,
-            processed=False
-        )
+            # DEBUG: Log what's happening before creating the object
+            
+            print(f"Saving new reading for meter: {meter_serial_no}, Date: {date_obj}")
 
-        # Save the image if it exists
-        if image_file:
-            meter_reading.meter_image.save(image_filename, image_file)
-            meter_reading.save()
+            # Save the new reading
+            meter_reading = MeterReading.objects.create(
+                meter=meter,
+                last_reading=last_reading,
+                new_reading=reading,
+                meter_status=status,
+                reading_date=date_obj,
+                processed=False
+            )
+
+            # Save the image if it exists
+            if image_file:
+                meter_reading.meter_image.save(image_filename, image_file)
+                meter_reading.save()
+
+        except Exception as e:
+            print(f"Error while saving meter reading: {e}")
 
     # Retrieve saved data to display in the template
     meter_list = MeterReading.objects.all()
