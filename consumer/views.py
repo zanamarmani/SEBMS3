@@ -12,7 +12,7 @@ from datetime import datetime, timedelta
 def dashboard(request):
     consumer = get_object_or_404(Consumer, user=request.user)
     bill = Bill.objects.filter(meter__consumer=consumer).first()
-    return render(request, 'profile_consumer.html', {'bill': bill})
+    return render(request, 'profile_consumer.html', {'bill': bill,'consumer':consumer})
 # 1. Payment History
 @consumer_required
 def payment_history(request):
@@ -33,7 +33,7 @@ def current_bill(request):
     consumer = get_object_or_404(Consumer, user=request.user)
     try:
         current_bill = Bill.objects.filter(meter__consumer=consumer, paid=False).latest('billmonth')
-        reading = get_object_or_404(MeterReading, meter=current_bill.meter)
+        reading = MeterReading.objects.filter( meter=current_bill.meter).latest('reading_date')
         meter_reading = reading.reading_date
         print(meter_reading)
     except Bill.DoesNotExist:

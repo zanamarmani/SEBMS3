@@ -20,7 +20,7 @@
                                             <tr class="table-header">
 												<th>Name</th>
 												<th>Consumer Number</th>
-												<th>Meter Number</th>
+												
 												<th>Area</th>
 												<th>Tariff</th>
 												<th>Approved</th>
@@ -29,26 +29,29 @@
 											
                                         </thead>
                                         <tbody>
-                                            {% for bill in bill %}
-                                            <tr class="table-row">
-												<td>{{ bill.meter.consumer.consumer_name }}</td>
-												<td>{{ bill.meter.consumer.consumer_number }}</td>
-												<td>{{ bill.meter.meter_number }}</td>
-												<td>{{ bill.meter.consumer.consumer_division }}</td>
-												<td>{{ bill.meter.consumer.consumer_tariff }}</td>
-												<td>{{ bill.meter.consumer.approved }}</td>
-												<td>
-													{% if not bill.meter.consumer.approved %}
-													<a href="{% url 'officestaff:delete_unapproved_consumer' bill.meter.consumer.pk %}"
-														class="btn-reject ">Delete</a>
-                                                        {% else %}
-                                                        <a href="{% url 'officestaff:consumer_profile' bill.meter.consumer.id %}">
-                                                            <button class="btn-view-details" type="button">View Details</button>
-                                                        </a>
-													{% endif %}
-												</td>
-											</tr>
-											{% endfor %}
+                                            {% for consumer in consumers %}
+    <tr class="table-row">
+        <td>{{ consumer.consumer_name }}</td>
+        <td>{{ consumer.consumer_number }}</td>
+        <td>{{ consumer.consumer_division }}</td>
+        <td>{{ consumer.consumer_tariff }}</td>
+        <td>{{ consumer.approved }}</td>
+        <td>
+            {% if not consumer.approved %}
+                <a href="{% url 'officestaff:delete_unapproved_consumer' consumer.pk %}" 
+               class="btn-reject" 
+               onclick="return confirmDelete();">
+                Delete
+            </a>
+            {% else %}
+                <a href="{% url 'officestaff:consumer_profile' consumer.pk %}">
+                    <button class="btn-view-details" type="button">View Details</button>
+                </a>
+            {% endif %}
+        </td>
+    </tr>
+{% endfor %}
+
                                         </tbody>
                                     </table>
                                 </div><!--//table-responsive-->

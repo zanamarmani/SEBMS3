@@ -2,6 +2,7 @@ from decimal import Decimal
 from msilib.schema import File
 import os
 from tempfile import NamedTemporaryFile
+from uuid import uuid4
 from django.shortcuts import render
 
 # Create your views here.
@@ -11,6 +12,7 @@ from django.http import HttpResponse
 import urllib
 from SDO.models import Tariff
 
+from SEBMS import settings
 from consumer.forms import ConsumerRegistrationForm
 from consumer.models import Consumer
 from meterreader.forms import MeterAssignmentForm
@@ -33,7 +35,10 @@ from .firebase_utils import fetch_meter_list
 
 from django.contrib.auth.decorators import login_required
 
-from bill.views import calculate_amount_due
+from bill.views import calculate_amount_due, calculate_average_units
+
+import os
+import urllib.request
 
 @officestaff_required
 def Home(request):
@@ -76,9 +81,13 @@ def register_consumer(request):
 
 @officestaff_required
 def list_consumers(request):
-    bill = Bill.objects.all()
-    title="consumer"
-    return render(request, 'list_consumers.html', {'bill': bill,'title':title})
+    consumers = Consumer.objects.all()
+    title = "Consumer"
+    context = {
+        "consumers": consumers,
+        "title": title,
+    }
+    return render(request, 'list_consumers.html', context)
 
 @officestaff_required
 def all_readings(request):
@@ -94,6 +103,7 @@ def Get_All_Readings(request):
     # Fetch all bills to display on the dashboard
     title="Meter Readings"
     return render(request, 'all_readings.html', {'meter_readings': meter_readings, 'title':title})
+
 @officestaff_required
 def save_meter_data_to_db(request):
     meter_data_list = fetch_meter_list()
@@ -114,46 +124,65 @@ def save_meter_data_to_db(request):
         except (ValueError, TypeError):
             continue  # Skip if data is invalid
 
-        # Get or skip if the meter doesn't exist
-        meter = Meter.objects.filter(meter_number=meter_serial_no).first()
-        if not meter:
-            continue
+        try:
+            # Get or skip if the meter doesn't exist
+            meter = Meter.objects.filter(meter_number=meter_serial_no).first()
+            if not meter:
+                continue
 
-        # Check if the reading already exists
-        if MeterReading.objects.filter(meter=meter, reading_date=date_obj).exists():
-            continue
+            # Check if the reading already exists
+            if MeterReading.objects.filter(meter=meter, reading_date=date_obj).exists():
+                continue
 
-        # Download the image from Firebase if available
-        if meter_image_url:
-            try:
-                img_temp = NamedTemporaryFile(delete=True)
-                urllib.request.urlretrieve(meter_image_url, img_temp.name)
-                image_file = File(img_temp)
-                image_filename = os.path.basename(meter_image_url)
-            except Exception as e:
-                print(f"Failed to download image: {e}")
+            # Download the image from Firebase if available
+            
+            if meter_image_url:
+                try:
+                    response = urllib.request.urlopen(meter_image_url)
+                    if response.status == 200:
+                        image_filename = f"{uuid4()}.jpg"
+                        media_path = os.path.join(settings.MEDIA_ROOT, 'meter_images')
+                        os.makedirs(media_path, exist_ok=True)
+                        file_path = os.path.join(media_path, image_filename)
+
+                        with open(file_path, 'wb') as file:
+                            file.write(response.read())
+
+                        with open(file_path, 'rb') as img_file:
+                            image_file = File(img_file, name=image_filename)
+                    else:
+                        image_file = None
+                except Exception as e:
+                    print(f"Failed to download image: {e}")
+                    image_file = None
+            else:
                 image_file = None
-        else:
-            image_file = None
 
-        # Get the last reading, default to 500 if no prior readings exist
-        last_reading_record = MeterReading.objects.filter(meter=meter).order_by('-reading_date').first()
-        last_reading = last_reading_record.new_reading if last_reading_record else 500
+            # Get the last reading, default to 500 if no prior readings exist
+            last_reading_record = MeterReading.objects.filter(meter=meter).order_by('-reading_date').first()
+            last_reading = last_reading_record.new_reading if last_reading_record else 500
 
-        # Save the new reading
-        meter_reading = MeterReading.objects.create(
-            meter=meter,
-            last_reading=last_reading,
-            new_reading=reading,
-            meter_status=status,
-            reading_date=date_obj,
-            processed=False
-        )
+            # DEBUG: Log what's happening before creating the object
+            print(f'meter url is  {meter_image_url}')
+            print(f"Saving new reading for meter: {meter_serial_no}, Date: {date_obj}")
 
-        # Save the image if it exists
-        if image_file:
-            meter_reading.meter_image.save(image_filename, image_file)
-            meter_reading.save()
+            # Save the new reading
+            meter_reading = MeterReading.objects.create(
+                meter=meter,
+                last_reading=last_reading,
+                new_reading=reading,
+                meter_status=status,
+                reading_date=date_obj,
+                processed=False
+            )
+
+            # Save the image if it exists
+            if image_file:
+                meter_reading.meter_image.save(image_filename, image_file)
+                meter_reading.save()
+
+        except Exception as e:
+            print(f"Error while saving meter reading: {e}")
 
     # Retrieve saved data to display in the template
     meter_list = MeterReading.objects.all()
@@ -177,7 +206,7 @@ def unpaid_bills(request):
     # Fetch unpaid bills from the database
     bills = Bill.objects.filter(paid=False)
     title="Unpaid Bills"
-    return render(request, 'unpaid_bills.html', {'unpaid_bills': bills,'title':title})
+    return render(request, 'all_bills.html', {'bills': bills,'title':title})
 from django.views.generic import ListView
 
 @officestaff_required
@@ -200,33 +229,50 @@ def Generate_bill(request):
     for reading in meter_readings:
         meter = reading.meter  # Get the related Meter object
 
-        if meter.consumer and meter.consumer.approved:
-            tariff = meter.consumer.consumer_tariff  # Get the consumer's tariff
-        else:
-            continue  # Skip if consumer is not approved
+        # Proceed only if the meter's consumer is approved
+        if not (meter.consumer and meter.consumer.approved):
+            continue
+
+        consumer = meter.consumer
+        tariff = consumer.consumer_tariff
+        average_units = calculate_average_units(meter)
+        
 
         # Calculate units consumed
         units_consumed = reading.new_reading - reading.last_reading
+        if not reading.meter_status or units_consumed<10:
+            units_consumed = average_units
+            current_bill = calculate_amount_due(average_units, tariff)
+        else:
+            current_bill = calculate_amount_due(units_consumed, tariff)
+        # Calculate the current bill amount based on units consumed
+        
+        payable_after_due_date = current_bill * Decimal('1.1')  # Adding 10% late fee
 
-        # Calculate the payable amounts
-        payable_amount = calculate_amount_due(units_consumed, tariff)
-        payable_after_due_date = payable_amount * Decimal('1.1')  # 10% late fee
+        # Calculate arrears from unpaid bills
+        previous_unpaid_bills = Bill.objects.filter(meter=meter, paid=False)
+        total_arrears = sum(bill.payableamount for bill in previous_unpaid_bills)
+
+        # Calculate the gross total payable amount (current payable + arrears)
+        gross_total = current_bill + total_arrears
 
         # Create a new Bill object
         bill = Bill.objects.create(
-            billmonth=timezone.now().date(),  # Current month
-            duedate=timezone.now().date() + timedelta(days=15),  # Due date 15 days later
-            detectionunit=Decimal('0.00'),  # Assuming no detection units
-            averageunit=Decimal('0.00'),  # Assuming no average units
-            units=units_consumed,  # Total units for the bill
-            unitsconsumed=units_consumed,  # Units consumed by the meter
-            payableamount=payable_amount,  # Amount due before the due date
-            payable_after_due_date=payable_after_due_date,  # Amount after due date
-            meter=meter,  # Link the meter to the bill
-            paid=False  # Initially mark as unpaid
+            billmonth=timezone.now().date(),
+            duedate=timezone.now().date() + timedelta(days=15),
+            detectionunit=average_units,
+            averageunit=average_units,
+            units=units_consumed,
+            unitsconsumed=units_consumed,
+            current_bill = current_bill,
+            payableamount=gross_total,  # Gross total including arrears
+            payable_after_due_date=payable_after_due_date,  
+            meter=meter,
+            arrears=total_arrears,  # Track the arrears on the bill
+            paid=False
         )
 
-        # Track the newly created bill
+        # Track the newly created bill ID for highlighting purposes
         newly_generated_bill_ids.append(bill.id)
 
         # Mark the meter reading as processed
@@ -236,11 +282,13 @@ def Generate_bill(request):
         # Collect details for rendering purposes (optional)
         bill_details.append({
             'meter_number': meter.meter_number,
-            'consumer_name': meter.consumer.consumer_name,
+            'consumer_name': consumer.consumer_name,
             'units_consumed': units_consumed,
-            'payable_amount': payable_amount,
+            'payable_amount': gross_total,  # Total due before late fee
             'payable_after_due_date': payable_after_due_date,
-            'bill_id': bill.id  # Track bill ID for reference
+            'arrears': total_arrears,
+            'bill_id': bill.id,
+            'current_bill':current_bill,
         })
 
     # Fetch all bills to render in the template
@@ -248,7 +296,8 @@ def Generate_bill(request):
 
     return render(request, 'all_bills.html', {
         'bills': all_bills,
-        'newly_generated_bill_ids': newly_generated_bill_ids,  # For highlighting new bills
+        'newly_generated_bill_ids': newly_generated_bill_ids,
+        'bill_details': bill_details  # Optional: Display bill details if needed
     })
 
 
@@ -367,5 +416,6 @@ def assign_meter_view(request):
 def consumer_profile(request, consumer_id):
     # Get the consumer profile based on the ID passed in the URL
     consumer = get_object_or_404(Consumer, id=consumer_id)
+    bill = Bill.objects.filter(meter__consumer_id=consumer_id).first()
     
-    return render(request, 'profile_consumer.html',{'consumer':consumer})
+    return render(request, 'sdo/profile_consumer.html', {'bill': bill})

@@ -6,19 +6,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Search & Assign Meter</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
     <style>
+          @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap");
+  
         body {
-            background-color: #f4f4f4;
-            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #dde1e7, #c1ccd5);
+            font-family: "Poppins", sans-serif;
         }
 
         .container {
-            max-width: 600px;
+            max-width: 800px;
             margin: 80px auto; /* Centers the form horizontally */
             padding: 30px;
             background-color: white;
             border-radius: 10px;
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
         }
 
         h2 {
@@ -40,14 +43,16 @@
             border-radius: 5px;
             border: 1px solid #cccccc;
             transition: border 0.3s ease;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.05);
         }
 
         input[type="text"]:focus, input[type="number"]:focus, select:focus {
-            border-color: #28a745; /* Green border on focus */
+            border-color: #4caf50; /* Green border on focus */
+            box-shadow: 0 0 5px rgba(0, 255, 76, 0.2);
         }
 
         button {
-            background-color: #28a745;
+            background-color: #4caf50;
             color: white;
             font-size: 16px;
             cursor: pointer;
@@ -56,7 +61,7 @@
         }
 
         button:hover {
-            background-color: #218838;
+            background-color: #3e8e41;
         }
 
         .error-list {

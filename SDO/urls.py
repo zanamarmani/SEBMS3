@@ -15,6 +15,7 @@ urlpatterns = [
     path('reject_new_consumers/', views.reject_new_consumers, name='reject_new_consumers'),
     path('add_user/', views.create_user, name='add_user'),
     path('show_all_consumers/', views.show_all_consumers, name='show_all_consumers'),
+    path('consumer_delete/<int:pk>/', views.delete_consumer, name='delete_consumer'),
     path('consumer/<int:consumer_id>/', views.consumer_profile, name='consumer_profile'),
     path('show_all_users/', views.show_all_users, name='show_all_users'),
     path('tariff_list/', views.tariff_list, name='tariff_list'),

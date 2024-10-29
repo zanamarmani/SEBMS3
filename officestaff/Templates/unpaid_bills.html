@@ -1,5 +1,5 @@
 	
-		{% extends 'base.html' %}
+{% extends 'base.html' %}
 
 {% block content %}
 
@@ -32,11 +32,10 @@
 											{% for bill in unpaid_bills %}
 												<tr  class=" table-row " >
 												<td>{{ bill.id }}</td>
-												<td>{{ bill.consumer.consumer_number }}</td>
-												<td>{{ bill.month }}</td>
+												<td>{{ bill.meter.consumer.consumer_number }}</td>
+												<td>{{ bill.billmonth }}</td>
 												<td>{{ bill.consumed_units }}</td>
 												<td>{{ bill.amount_due }}</td>
-												
 												<td>
 												{% if bill.paid %}
 													Paid 

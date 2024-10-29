@@ -1,171 +1,53 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Tariff Management</title>
-    <style>
-      /* General Styling */
-      @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap");
+{% extends 'sdo/base.html' %}
 
-      body {
-        font-family: "Poppins", sans-serif;
-        background-color: #eef2f7;
-        margin: 0;
-        padding: 0;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        min-height: 100vh;
-      }
+{% block content %}
 
+<div class="app-wrapper">
+    <div class="app-content pt-3 p-md-3 p-lg-4">
+        <div class="container-xl">
+            <div class="row g-3 mb-4 align-items-center justify-content-between">
+                <div class="col-auto">
+                    <h1 class="app-page-title mb-0">{{title}}</h1>
+                </div>
 
-      /* Header */
-      h1, h2 {
-        font-size: 26px;
-        margin-bottom: 25px;
-        color: #333;
-        text-align: center;
-      }
-
-      /* Form Input Fields */
-      label {
-        display: block;
-        text-align: left;
-        margin-bottom: 8px;
-        font-weight: 600;
-        color: #555;
-      }
-
-      input[type="text"],
-      input[type="number"],
-      select {
-        width: 100%;
-        padding: 12px;
-        margin-bottom: 20px;
-        border: 1px solid #ddd;
-        border-radius: 6px;
-        box-sizing: border-box;
-        font-size: 16px;
-        transition: border-color 0.3s ease;
-      }
-
-      input[type="text"]:focus,
-      input[type="number"]:focus,
-      select:focus {
-        border-color: #4caf50;
-        outline: none;
-      }
-
-      /* Submit and Action Buttons */
-      button, input[type="submit"] {
-        background-color: #4caf50;
-        color: white;
-        padding: 12px;
-        border: none;
-        border-radius: 6px;
-        cursor: pointer;
-        width: 100%;
-        font-size: 16px;
-        font-weight: 600;
-        transition: background-color 0.3s ease;
-        margin-top: 10px;
-      }
-
-      button:hover, input[type="submit"]:hover {
-        background-color: #3e8e41;
-      }
-
-      button[name="delete"] {
-        background-color: #8e8a8a;
-        margin-top: 15px;
-      }
-
-      button[name="delete"]:hover {
-        background-color: #c0392b;
-      }
-
-      /* Table Styling */
-      table {
-        width: 90%;
-        border-collapse: collapse;
-        margin-top: 20px auto;
-        background-color: #fff;
-        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
-      }
-
-      th, td {
-        padding: 12px 15px;
-        text-align: left;
-        border-bottom: 1px solid #ddd;
-      }
-
-      th {
-        background-color: #4caf50;
-        color: white;
-        font-weight: 600;
-      }
-
-      td {
-        color: #555;
-      }
-
-      a {
-        text-decoration: none;
-        color: #4caf50;
-        font-weight: bold;
-      }
-
-      a:hover {
-        text-decoration: underline;
-      }
-      .test-message {
-            margin-top: 15px;
-            margin-bottom: 15px;
-            color: #666;
-            font-size: 14px;
-            text-align: center;
-        }
-      /* Responsive */
-      @media (max-width: 600px) {
-        .form-container, table {
-          width: 100%;
-          padding: 20px;
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <h2>All Existing Tariffs</h2>
-    <table>
-      <thead>
-        <tr>
-          <th>Tariff Type</th>
-          <th>Price for 100 Units</th>
-          <th>Price for 100-200 Units</th>
-          <th>Price for 200-300 Units</th>
-          <th>Price for Above 300 Units</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for tariff in all_tariffs %}
-        <tr>
-          <td>{{ tariff.get_tariff_type_display }}</td>
-          <td>{{ tariff.price_100 }}</td>
-          <td>{{ tariff.price_200 }}</td>
-          <td>{{ tariff.price_300 }}</td>
-          <td>{{ tariff.price_above }}</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-     <footer class="app-footer">
-		    <div class="container text-center py-3">
-		         <!-- /* This template is free as long as you keep the footer attribution link. If you'd like to use the template without the attribution link, you can buy the commercial license via our website: themes.3rdwavemedia.com Thank you for your support. :) */ -->
-            <small class="copyright"> Copyright :All rights are reserved  <span class="sr-only"></span><i class="fas fa-heart" style="color: #fb866a;"></i> by <a class="app-link" href="http://themes.3rdwavemedia.com" target="_blank"> SEBMS</a> </small>
-		       
-		    </div>
-	    </footer>
-  </body>
-</html>
+                <div class="tab-content" id="orders-table-tab-content">
+                    <div class="tab-pane fade show active" id="orders-all" role="tabpanel" aria-labelledby="orders-all-tab">
+                        <div class="app-card app-card-orders-table shadow-sm mb-5">
+                            <div class="app-card-body">
+                                <div class="table-responsive">
+                                    <table class="table app-table-hover mb-0 text-left table-green">
+                                        <thead>
+                                            <tr class="table-header">
+                                      
+                                                <th>Tariff Type</th>
+                                                <th>Price for 100 Units</th>
+                                                <th>Price for 100-200 Units</th>
+                                                <th>Price for 200-300 Units</th>
+                                                <th>Price for Above 300 Units</th>
+                                                <!-- <th>Actions</th> -->
+                                              </tr>
+										
+                                        </thead>
+                                        <tbody>
+                                         
+											
+                        {% for tariff in all_tariffs %}
+                        <tr class="table-row">
+                          <td>{{ tariff.get_tariff_type_display }}</td>
+                          <td>{{ tariff.price_100 }}</td>
+                          <td>{{ tariff.price_200 }}</td>
+                          <td>{{ tariff.price_300 }}</td>
+                          <td>{{ tariff.price_above }}</td>
+                        </tr>
+                        {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div><!--//table-responsive-->
+                            </div><!--//app-card-body-->
+                        </div><!--//app-card-->
+                    </div><!--//tab-pane-->
+                </div><!--//tab-content-->
+            </div><!--//container-xl-->
+        </div><!--//app-content-->
+    </div><!--//app-wrapper-->
+{% endblock %}

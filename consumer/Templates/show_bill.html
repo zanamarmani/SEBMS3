@@ -8,253 +8,131 @@
     />
     {% load static %}
     <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
-    <title>BiLL</title>
+    <title>Bill</title>
+    <style>
+      #mainTable {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      #mainTable th, #mainTable td {
+        padding: 8px;
+        border: 1px solid #ddd;
+        text-align: left;
+      }
+      .center {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+      }
+      .print-btn {
+        margin-top: 20px;
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 4px;
+      }
+      .print-btn:hover {
+        background-color: #45a049;
+      }
+    </style>
   </head>
   <body>
     <div class="center page watermarked">
       {% if current_bill %}
-
-      <table id="mainTable" border style="width: 990px; height: 100%">
-        <thead></thead>
+      <table id="mainTable">
+        <thead>
+          <tr>
+            <th colspan="6">
+              <img src="https://billing.wpdgb.gov.pk/assets/images/logo.png" style="height: 60px" />
+              <div>WATER & POWER DEPARTMENT GILGIT BALTISTAN</div>
+              <div>Electricity Consumer Bill</div>
+            </th>
+          </tr>
+        </thead>
         <tbody>
+          <!-- Consumer and Meter Details -->
           <tr>
-            <td rowspan="3">
-              <img
-                src="https://billing.wpdgb.gov.pk/assets/images/logo.png"
-                style="height: 60px"
-              />
+            <td colspan="2" rowspan="3">
+              <img style="width: 150px; height: 150px" src="https://billing.wpdgb.gov.pk/NA" alt="Meter Image" />
             </td>
-            <td colspan="5" class="bill-title">
-              WATER & POWER DEPARTMENT GILGIT BALTISTAN <br />Electricity
-              Consumer Bill<br />
-            </td>
-          </tr>
-          <tr>
-            <td colspan="2" rowspan="6">
-              <img
-                style="width: 150px; height: 150px"
-                src="https://billing.wpdgb.gov.pk/NA"
-                alt="Meter Image"
-              />
-            </td>
-            <td class="title">METER NO</td>
-            <td class="title">BILL MONTH</td>
-            <td class="title">READING DATE</td>
-          </tr>
-          <tr class="normal-row">
-            <td>{{current_bill.meter.meter_number}}</td>
+            <td>METER NO</td>
+            <td>{{ current_bill.meter.meter_number }}</td>
+            <td>BILL MONTH</td>
             <td>{{ current_bill.billmonth }}</td>
-            <td>{{meter_reading.reading_date}}</td>
-           
           </tr>
-          <tr class="title">
-
-            
+          <tr>
+            <td>READING DATE</td>
+            <td>{{ meter_reading.reading_date }}</td>
             <td>DUE DATE</td>
-          </tr>
-          <tr class="normal-row">
-            
-            
-            <td>{{current_bill.duedate}}</td>
+            <td>{{ current_bill.duedate }}</td>
           </tr>
           <tr>
-            <td class="title">Consumer No</td>
-            
-            <td colspan="2" rowspan="2">
-              <b>Payment History (Last 12 Months)</b>
-            </td>
+            <td>Consumer No</td>
+            <td>{{ current_bill.meter.consumer.consumer_number }}</td>
+            <td>Consumer Name</td>
+            <td>{{ current_bill.meter.consumer.consumer_name }}</td>
           </tr>
-          <tr class="normal-row">
-            <td>{{current_bill.meter.consumer.consumer_number}}</td>
-            <td>2.5</td>
-          </tr>
+
+          <!-- Address and Division -->
           <tr>
-            <td class="title" colspan="2">Consumer Name</td>
-    
-            <td class="title" colspan="2">Consumer Address</td>
-            
-          </tr>
-          <tr>
-            
-            <td colspan="2" style="height: 60px">{{current_bill.meter.consumer.consumer_name}}</td>
-            <td colspan="2" style="height: 60px">{{current_bill.meter.consumer.consumer_address}}</td>
-             
-          </tr>
-          <tr class="title">
-            
+            <td>Consumer Address</td>
+            <td colspan="3">{{ current_bill.meter.consumer.consumer_address }}</td>
             <td>DIVISION</td>
+            <td>{{ current_bill.meter.consumer.consumer_division }}</td>
           </tr>
-          <tr class="normal-row">
-            
-            <td>{{current_bill.meter.consumer.consumer_division}}</td>
-          </tr>
-          <tr class="title">
+
+          <!-- Billing Information -->
+          <tr>
             <td>No of Months</td>
-            <td colspan="2">TARIFF</td>
-            <td>Detection Units</td>
-          </tr>
-          <tr class="normal-row">
             <td>1</td>
-            <td colspan="2">{{current_bill.meter.consumer.consumer_tariff}}</td>
-            <td>{{current_bill.detectionunit}}</td>
+            <td>TARIFF</td>
+            <td colspan="3">{{ current_bill.meter.consumer.consumer_tariff }}</td>
           </tr>
-          <tr class="title">
+          <tr>
             <td>Average Units</td>
-            <td colspan="2">Present Reading</td>
+            <td>{{ current_bill.averageunit }}</td>
+            <td>Present Reading</td>
+            <td>{{ meter_reading.new_reading }}</td>
             <td>Previous Reading</td>
+            <td>{{ meter_reading.last_reading }}</td>
           </tr>
-          <tr class="normal-row">
-            <td>{{current_bill.averageunit}}</td>
-            <td colspan="2">{{meter_reading.new_reading}}</td>
-            <td>{{meter_reading.last_reading}}</td>
-          </tr>
-          <tr class="title">
+          <tr>
             <td>Units</td>
-           
+            <td>{{ meter_reading.new_reading }}</td>
             <td>Units Consumed</td>
+            <td>{{ current_bill.unitsconsumed }}</td>
           </tr>
-          <tr class="normal-row">
-            <td>{{current_bill.units}}</td>
-            
-            <td>{{current_bill.unitsconsumed}}</td>
-          </tr>
-         
-        
-          <tr class="title">
+          <tr>
             <td>Current Bill</td>
-            <td>{{current_bill.payableamount}}</td>
-          </tr>
-          <tr class="title">
+            <td>{{ current_bill.current_bill }}</td>
             <td>Payable Amount</td>
-            <td>{{current_bill.payableamount}}</td>
+            <td>{{ current_bill.payableamount }}</td>
           </tr>
-          <tr class="title">
+          <tr>
             <td>Due Date</td>
-            <td>{{current_bill.duedate}}</td>
-          </tr>
-          <tr class="title">
+            <td>{{ current_bill.duedate }}</td>
             <td>Payable After DueDate</td>
-            <td>{{current_bill.payable_after_due_date}}</td>
-          </tr>
-          <tr class="title">
-            <td colspan="3">Current Bill</td>
-            <td>{{current_bill.payableamount }}</td>
-            <td colspan="2">Bill Calculation</td>
-          </tr>
-          
-          <tr class="title">
-            <td colspan="3">Gross Total</td>
-            <td>28689</td>
-          </tr>
-          <tr class="title">
-            <td colspan="6">Bill/Meter Status: 
-            {% if meter_reading.meter_status %}
-              Active 
-              {% else %}
-              Not Active
-            {% endif %}
-              </td>
+            <td>{{ current_bill.payable_after_due_date }}</td>
           </tr>
           <tr>
-            <td colspan="6">
-              <b style="height: 100px; font-size: 60px; font-weight: bold"
-                >T O L E T</b
-              >
-              <br />
-              Email:
-              <b
-                ><a
-                  href="/cdn-cgi/l/email-protection"
-                  class="__cf_email__"
-                  data-cfemail="20494e464f6057504447420e474f560e504b"
-                  >[email&#160;protected]</a
-                ></b
-              >
-              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Phone:
-              <b>1234567890</b> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Website:
-              <b>www.sebms.com</b>
-            </td>
-          </tr>
-          <tr
-            style="border-left: 1px solid white; border-right: 1px solid white"
-          >
-            <td colspan="6">
-              <p>
-                - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                - - - - - - - - - - - - - - - -
-              </p>
-            </td>
-          </tr>
-          <tr
-            style="
-              border-left: 1px solid white;
-              border-right: 1px solid white;
-              border-top: 1px solid white;
-            "
-          >
-            <td rowspan="3">
-              <img
-                src="https://billing.wpdgb.gov.pk/assets/images/logo.png"
-                style="height: 60px"
-              />
-            </td>
-            <td colspan="4" rowspan="3">
-              <img
-                width="100px"
-                src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIgAAAAeAQMAAADNS8RPAAAABlBMVEX///8AAABVwtN+AAAAAXRSTlMAQObYZgAAAAlwSFlzAAAOxAAADsQBlSsOGwAAACJJREFUKJFj+Mx/+M+BMzb2Bp8/nGE+fODPeYZRkVERsAgAwWpJIIbNBt4AAAAASUVORK5CYII="
-              />
-            </td>
-            <td
-              colspan="3"
-              style="border-right: 1px solid white; border-top: 1px solid white"
-            >
-              <b>To Recieve Your Bill Via SMS/Email</b>
-            </td>
+            <td colspan="2">Gross Total</td>
+            <td colspan="4">{{ current_bill.gross_total }}</td>
           </tr>
           <tr>
-            <td
-              style="border-right: 1px solid white; border-top: 1px solid white"
-            >
-              Cell No: ________________________
-            </td>
-          </tr>
-          <tr>
-            <td
-              style="border-right: 1px solid white; border-top: 1px solid white"
-            >
-              Email: __________________________
-            </td>
-          </tr>
-          <tr>
-            <td class="title">Consumer No</td>
-            
-            <td class="title" colspan="2">Meter No</td>
-            <td class="title">Payable Within Due Date</td>
-          </tr>
-          <tr class="normal-row">
-            <td>{{current_bill.meter.consumer.consumer_number}}</td>
-            
-            <td colspan="2">{{current_bill.meter.meter_number}}</td>
-            <td><b>{{current_bill.payableamount}}</b></td>
-          </tr>
-          <tr>
-            <td class="title">Consumer Name</td>
-            <td class="title" colspan="2">Bill Month</td>
-            <td class="title" colspan="2">Due Date</td>
-            <td class="title">Payable After Due</td>
-          </tr>
-          <tr class="normal-row">
-            <td>{{current_bill.meter.consumer.consumer_name}}</td>
-            <td colspan="2">{{ current_bill.billmonth }}</td>
-            <td colspan="2">{{current_bill.duedate}}</td>
-            <td><b>{{current_bill.payable_after_due_date}}</b></td>
+            <td colspan="6">Bill/Meter Status: {{ meter_reading.meter_status|yesno:"Active,Not Active" }}</td>
           </tr>
         </tbody>
       </table>
       {% endif %}
+
+      <button class="print-btn" onclick="window.print()">Print Bill</button>
+      
       <p style="font-size: 10px">
-        Designed By SATA Technologies Pvt. Ltd (www.sata.pk)
+        Designed By zanam Technologies (www.sebms.pk)
       </p>
     </div>
     <script

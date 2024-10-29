@@ -5,45 +5,57 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Register Consumer</title>
     <style>
-      /* General Styling */
+      /* Enhanced Body Styling */
       @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap");
 
       body {
         font-family: "Poppins", sans-serif;
-        background-color: #eef2f7;
+        background: linear-gradient(135deg, #dde1e7, #c1ccd5);
         margin: 0;
         padding: 0;
         display: flex;
         justify-content: center;
         align-items: center;
-        min-height: 100vh;
+        min-height: 100vh; /* Ensures full viewport height */
       }
 
       /* Form Container */
       .form-container {
-        background-color: #ffffffc9;
-        padding: 30px;
-        border-radius: 12px;
-        box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
-        width: 400px;
+        margin-top: 15px;
+        margin-bottom: 15px;
+        background-color: #ffffff;
+        border-radius: 15px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        width: 100%;
+        max-width: 800px; /* Limit maximum width */
+        padding: 40px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
         text-align: center;
-        margin: 40px 0; /* Adding some space from top and bottom */
       }
+
+      /* .form-container:hover {
+        transform: scale(1.02);
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+      } */
 
       /* Header */
       h1 {
         font-size: 26px;
-        margin-bottom: 25px;
-        color: #333;
+        color: #34495e;
+        margin-bottom: 10px;
+      }
+      .form-container p {
+        font-size: 14px;
+        color: #666;
       }
 
       /* Form Input Fields */
       label {
         display: block;
         text-align: left;
-        margin-bottom: 8px;
-        font-weight: 600;
-        color: #555;
+        font-weight: bold;
+        color: #34495e;
+        margin: 10px 0 5px;
       }
 
       input[type="text"],
@@ -52,37 +64,19 @@
       select {
         width: 100%;
         padding: 12px;
-        margin-bottom: 20px;
-        border: 1px solid #ddd;
-        border-radius: 6px;
-        box-sizing: border-box;
+        margin-bottom: 10px;
+        border: 1px solid #bdc3c7;
+        border-radius: 10px;
         font-size: 16px;
         transition: border-color 0.3s ease;
+        box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.05);
       }
 
-      input[type="text"]:focus,
-      input[type="password"]:focus,
+      input:focus,
       select:focus {
-        border-color: #4caf50;
+        border-color: #29b935;
         outline: none;
-      }
-
-      /* Submit Button */
-      button[type="submit"] {
-        background-color: #4caf50;
-        color: white;
-        padding: 12px;
-        border: none;
-        border-radius: 6px;
-        cursor: pointer;
-        width: 100%;
-        font-size: 16px;
-        font-weight: 600;
-        transition: background-color 0.3s ease;
-      }
-
-      button[type="submit"]:hover {
-        background-color: #3e8e41;
+        box-shadow: 0 0 5px rgba(0, 128, 255, 0.2);
       }
 
       /* Error Messages */
@@ -101,70 +95,81 @@
       li {
         margin-bottom: 10px;
       }
-      .messages{
 
-        text-size-adjust: 2px;
+      /* Submit Button */
+      button[type="submit"] {
+        background-color: #2ca536;
+        padding: 12px 30px;
+        color: white;
+        text-align: center;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: bold;
+        border: none;
+        cursor: pointer;
+        width: 100%;
+        transition: background-color 0.3s ease, transform 0.3s ease;
+      }
+
+      button[type="submit"]:hover {
+        background-color: #248e2d;
+        transform: translateY(-2px);
       }
     </style>
   </head>
   <body>
     <div class="form-container">
       <h1>Register Consumer</h1>
-      <p><small>Please fill the following fileds</small></p> 
+      <p>Please fill the following fields</p> 
+
+      <!-- Error Message Display -->
       {% if form.errors %}
-<div class="alert alert-danger">
-    <ul>
-        {% for field in form %}
+      <div class="error-messages">
+        <ul>
+          {% for field in form %}
             {% for error in field.errors %}
-                <li>{{ error }}</li>
+              <li>{{ error }}</li>
             {% endfor %}
-        {% endfor %}
-        {% for error in form.non_field_errors %}
+          {% endfor %}
+          {% for error in form.non_field_errors %}
             <li>{{ error }}</li>
-        {% endfor %}
-    </ul>
-</div>
-{% endif %}
-      <p>{{ message }}</p>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+      
+      <!-- Form -->
       <form method="post" action="{% url 'officestaff:registerconsumer' %}">
         {% csrf_token %}
-    
+
         <label for="name">Consumer Name:</label>
         {{ form.consumer_name }}
-    
+
         <label for="consumer_number">Consumer Number:</label>
         {{ form.consumer_number }}
-        <label for="consumer_number">Consumer Email:</label>
+
+        <label for="email">Consumer Email:</label>
         {{ form.email }}
 
-    
-        <label for="id_password">Consumer Password:</label>
+        <label for="password">Consumer Password:</label>
         <div class="input-group">
-          {{ form.password }} <!-- This is the default rendering of the password field -->
+          {{ form.password }}
           <span class="input-group-text" id="togglePassword">
-              <i class="fa fa-eye" aria-hidden="true"></i>
+            <i class="fa fa-eye" aria-hidden="true"></i>
           </span>
-      </div>
-    
-        <label for="area_number">Consumer Address:</label>
+        </div>
+
+        <label for="consumer_address">Consumer Address:</label>
         {{ form.consumer_address }}
-    
-        <label for="area_number">Consumer Division:</label>
+
+        <label for="consumer_division">Consumer Division:</label>
         {{ form.consumer_division }}
-    
+
         <label for="tariff">Consumer Tariff Type:</label>
         {{ form.consumer_tariff }}
-    
+
         <button type="submit">Register</button>
-    
-        {% if messages %}
-        <ul class="messages">
-            {% for message in messages %}
-            <li>{{ message }}</li>
-            {% endfor %}
-        </ul>
-        {% endif %}
-    </form>
+      </form>
     </div>
   </body>
 </html>

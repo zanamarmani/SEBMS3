@@ -6,3 +6,4 @@ def officestaff_required(view_func):
             return view_func(request, *args, **kwargs)
         return redirect("login")
     return _wrapped_view
+

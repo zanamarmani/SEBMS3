@@ -1,0 +1,30 @@
+<!-- Replaced Project Status with a Table -->
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">Bill Overview</h5>
+        <table class="custom-table">
+            <thead>
+                <tr>
+                    <th>Meter Number</th>
+                    <th>Unit Consumed in Current Month</th>
+                    <th>Payable Amount</th>
+                    <th>Paid Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{{bill.meter.meter_number}}</td>
+                    <td>{{bill.unitsconsumed}}</td>
+                    <td>{{bill.payableamount}}</td>
+                    <td>
+                    {% if bill.paid %}
+                        Paid
+                        {% else %}
+                        Unpaid
+                    {% endif %}
+                        </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

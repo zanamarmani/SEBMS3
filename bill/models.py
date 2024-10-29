@@ -12,6 +12,9 @@ class Bill(models.Model):
     payableamount = models.DecimalField(max_digits=10, decimal_places=2,null=True)  # Amount payable
     payable_after_due_date = models.DecimalField(max_digits=10, decimal_places=2,null=True)  # Amount after due date
     meter = models.ForeignKey(Meter, on_delete=models.CASCADE,null=True,blank=True)  # Many-to-one to Meter
+    arrears = models.DecimalField(max_digits=10, decimal_places=2,default=0.00)
+    gross_total = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
+    current_bill = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
     paid = models.BooleanField(default=False, null=True)
 
     def __str__(self):

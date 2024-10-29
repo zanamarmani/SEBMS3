@@ -10,28 +10,30 @@
 
       body {
         font-family: "Poppins", sans-serif;
-        background-color: #eef2f7;
+        /* background-color: #eef2f7; */
+        background: linear-gradient(135deg, #dde1e7, #c1ccd5);
         margin: 0;
         padding: 0;
         display: flex;
-        flex-direction: column;
-        align-items: center;
-        min-height: 100vh;
+        justify-content: center; /* Center horizontally */
+        align-items: center;     /* Center vertically */
+        min-height: 100vh;      /* Full viewport height */
       }
 
       /* Form Container */
       .form-container {
-        background-color: #ffffffc9;
+        background-color: #ffffff;
         padding: 30px;
         border-radius: 12px;
         box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
-        width: 400px;
+        width: 800px;
         text-align: center;
-        margin: 40px 0;
+        margin: 40px 0; /* Optional: This can be adjusted if needed */
       }
 
       /* Header */
-      h1, h2 {
+      h1,
+      h2 {
         font-size: 26px;
         margin-bottom: 25px;
         color: #333;
@@ -54,21 +56,25 @@
         padding: 12px;
         margin-bottom: 20px;
         border: 1px solid #ddd;
-        border-radius: 6px;
+        border-radius: 8px;
         box-sizing: border-box;
         font-size: 16px;
         transition: border-color 0.3s ease;
+        box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.05);
       }
 
       input[type="text"]:focus,
       input[type="number"]:focus,
       select:focus {
+
         border-color: #4caf50;
         outline: none;
+        box-shadow: 0 0 5px rgba(0, 128, 255, 0.2);
       }
 
       /* Submit and Action Buttons */
-      button, input[type="submit"] {
+      button,
+      input[type="submit"] {
         background-color: #4caf50;
         color: white;
         padding: 12px;
@@ -82,7 +88,8 @@
         margin-top: 10px;
       }
 
-      button:hover, input[type="submit"]:hover {
+      button:hover,
+      input[type="submit"]:hover {
         background-color: #3e8e41;
       }
 
@@ -104,7 +111,8 @@
         box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
       }
 
-      th, td {
+      th,
+      td {
         padding: 12px 15px;
         text-align: left;
         border-bottom: 1px solid #ddd;
@@ -129,16 +137,19 @@
       a:hover {
         text-decoration: underline;
       }
+
       .test-message {
-            margin-top: 15px;
-            margin-bottom: 15px;
-            color: #666;
-            font-size: 14px;
-            text-align: center;
-        }
+        margin-top: 15px;
+        margin-bottom: 15px;
+        color: #666;
+        font-size: 14px;
+        text-align: center;
+      }
+
       /* Responsive */
       @media (max-width: 600px) {
-        .form-container, table {
+        .form-container,
+        table {
           width: 100%;
           padding: 20px;
         }
@@ -149,32 +160,24 @@
     <div class="form-container">
       <h1>{% if tariff %}Update{% else %}Create{% endif %} Tariff</h1>
       <div class="test-message">
-        Choose the type of tariff you want to update 
-   </div>
+        Choose the type of tariff you want to update
+      </div>
       <form method="post">
         {% csrf_token %}
-        
-        <label for="tariff_type">Tariff Type:</label>
-        {{form.tariff_type}}
-        
-        <label for="price_100">Price for 100 Units:</label>
-        {{form.price_100}}        
-        <label for="price_200">Price for 100-200 Units:</label>
-        {{form.price_200}}        
-        <label for="price_300">Price for 200-300 Units:</label>
-        {{form.price_300}}        
-        <label for="price_above">Price for Above 300 Units:</label>
-        {{form.price_above}}        
-        <button type="submit">{% if tariff %}Update{% else %}Create{% endif %}</button>
 
+        <label for="tariff_type">Tariff Type:</label>
+        {{ form.tariff_type }}
+
+        <label for="price_100">Price for 100 Units:</label>
+        {{ form.price_100 }}
+        <label for="price_200">Price for 100-200 Units:</label>
+        {{ form.price_200 }}
+        <label for="price_300">Price for 200-500 Units:</label>
+        {{ form.price_300 }}
+        <label for="price_above">Price for Above 500 Units:</label>
+        {{ form.price_above }}
+        <button type="submit">{% if tariff %}Update{% else %}Create{% endif %}</button>
       </form>
     </div>
-  </div>
-     <footer class="app-footer">
-		    <div class="container text-center py-3">
-            <small class="copyright"> Copyright :All rights are reserved  <span class="sr-only"></span><i class="fas fa-heart" style="color: #fb866a;"></i> by <a class="app-link" href="http://themes.3rdwavemedia.com" target="_blank"> SEBMS</a> </small>
-		       
-		    </div>
-	    </footer>
   </body>
 </html>

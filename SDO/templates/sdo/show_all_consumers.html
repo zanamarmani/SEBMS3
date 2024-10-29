@@ -7,7 +7,7 @@
         <div class="container-xl">
             <div class="row g-3 mb-4 align-items-center justify-content-between">
                 <div class="col-auto">
-                    <h1 class="app-page-title mb-0">{{title}}</h1>
+                    <h1 class="app-page-title mb-0">Consumer List</h1>
                 </div>
 
                 <div class="tab-content" id="orders-table-tab-content">
@@ -18,31 +18,39 @@
                                     <table class="table app-table-hover mb-0 text-left table-green">
                                         <thead>
                                             <tr class="table-header">
-                                                <th>Name</th>
-                                                <th>Consumer Number</th>
-                                                <th>Meter Number</th>
-                                                <th>Area Number</th>
-                                                <th>Tariff</th>
-                                                <th>Approved</th>
-                                                <th>Action</th>
-                                            </tr>
+                                                <th>ID</th>
+												<th>Name</th>
+												<th>Consumer Number</th>
+												
+												<th>Area</th>
+												<th>Tariff</th>
+												<th>Approved</th>
+												<th>Action</th>
+											</tr>
+											
                                         </thead>
                                         <tbody>
-                                            {% for bill in bill %}
-                                            <tr class="table-row">
-                                                <td>{{ bill.meter.consumer.consumer_name }}</td>
-												<td>{{ bill.meter.consumer.consumer_number }}</td>
-												<td>{{ bill.meter.meter_number }}</td>
-												<td>{{ bill.meter.consumer.consumer_division }}</td>
-												<td>{{ bill.meter.consumer.consumer_tariff }}</td>
-												<td>{{ bill.meter.consumer.approved }}</td>
-                                                <td>
-                                                    <a href="{% url 'SDO:consumer_profile' bill.meter.consumer.id %}">
-                                                        <button class="btn-view-details" type="button">View Details</button>
-                                                    </a>
-                                                </td>
-                                            </tr>
-                                            {% endfor %}
+    {% for consumer in consumers %}
+    <tr class="table-row">
+        <td>{{consumer.id}}</td>
+        <td>{{ consumer.consumer_name }}</td>
+        <td>{{ consumer.consumer_number }}</td>
+        <td>{{ consumer.consumer_division }}</td>
+        <td>{{ consumer.consumer_tariff }}</td>
+        <td>{{ consumer.approved }}</td>
+        <td>
+            <a href="{% url 'SDO:consumer_profile' consumer.pk %}">
+                <button class="btn-view-details" type="button">View Details</button>
+            </a>
+            <a href="{% url 'SDO:delete_consumer' consumer.pk %}" 
+               class="btn-reject" 
+               onclick="return confirmDelete();">
+                Delete
+            </a>
+        </td>
+    </tr>
+{% endfor %}
+
                                         </tbody>
                                     </table>
                                 </div><!--//table-responsive-->

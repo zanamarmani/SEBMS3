@@ -8,7 +8,7 @@ from . import views
 from users.views import success_page
 app_name = 'officestaff'
 urlpatterns = [
-    path('',views.Home, name = 'home'),
+    path('',views.Home, name = 'dashboard'),
     path('registerconsumer/', views.register_consumer, name='registerconsumer'),
     path('consumers/', views.list_consumers, name='list_consumers'),
     path('all_readings_from_firebase/', views.Get_All_Readings, name='all_readings_from_firebase'),

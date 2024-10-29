@@ -100,9 +100,13 @@ def add_user(request):
 
 @sdo_required
 def show_all_consumers(request):
-    bill = Bill.objects.all()
-    title="Consumer"
-    return render(request, 'sdo/show_all_consumers.html', {'bill': bill, 'title':title})
+    consumers = Consumer.objects.all()
+    title = "Consumer"
+    context = {
+        "consumers": consumers,
+        "title": title,
+    }
+    return render(request, 'sdo/show_all_consumers.html', context)
 
 @sdo_required
 def consumer_profile(request, consumer_id):
@@ -126,7 +130,8 @@ def show_all_users(request):
 def tariff_list(request):
     # Fetch all tariffs for display
     all_tariffs = Tariff.objects.all()
-    return render(request, 'sdo/tariff_list.html', {'all_tariffs': all_tariffs})
+    title="Tariff List"
+    return render(request, 'sdo/tariff_list.html', {'all_tariffs': all_tariffs, 'title':title })
 
 
 
@@ -260,3 +265,26 @@ def create_user(request):
     return render(request, 'sdo/add_user.html', {'form': form})
 
 
+@sdo_required
+def delete_consumer(request, pk):
+    # Fetch the consumer by their primary key (id) and ensure they are unapproved
+    try:
+        # Fetch the consumer by primary key (id) and ensure they are unapproved
+        consumer = get_object_or_404(Consumer, pk=pk)
+        
+        # Log to check if the consumer is found
+        print(f"Found consumer: {consumer.consumer_name}")
+
+        # Delete the consumer
+        consumer.delete()
+
+        # Add a success message
+        messages.success(request, f'Consumer {consumer.consumer_name} has been deleted.')
+
+    except Exception as e:
+        # In case of an error, log the error message
+        print(f"Error: {e}")
+        messages.error(request, 'No consumer matches the given query.')
+
+    # Redirect to a list or dashboard after deletion
+    return redirect('SDO:show_all_consumers') 

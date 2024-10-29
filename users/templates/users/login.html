@@ -4,7 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Login</title>
+
+    <!-- FontAwesome Link for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-dBRt9UqzHq1GhTXfTBIw5vY3JX+Pa8ylME9jFSX65d1syR/mDB6lvzqEdybSCGLR5+UA0j83MsXBZxK9Y54mNw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
     <style>
+         @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap");
+    
         /* Basic reset */
         * {
             margin: 0;
@@ -13,12 +19,13 @@
         }
 
         body {
+            font-family: "Poppins", sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
             background: linear-gradient(135deg, #f0f0f5 50%, #dfe9f3);
-            font-family: 'Poppins', Arial, sans-serif;
+        
         }
 
         h2 {
@@ -34,16 +41,12 @@
             border-radius: 12px;
             box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
             width: 100%;
-            max-width: 400px;
+            max-width: 430px;
             transition: transform 0.3s ease;
         }
 
-        form:hover {
-            transform: translateY(-5px);
-        }
-
         form p {
-            margin-bottom: 15px;
+            margin-bottom: 10px;
             text-align: center;
         }
 
@@ -54,7 +57,7 @@
         input[type="text"], input[type="password"] {
             width: 100%;
             padding: 12px 40px 12px 12px;
-            margin-top: 5px;
+            /* margin-top: 5px; */
             margin-bottom: 20px;
             border-radius: 8px;
             border: 1px solid #ccc;
@@ -75,11 +78,13 @@
             transform: translateY(-50%);
             color: #888;
             font-size: 18px;
+            pointer-events: none; /* Prevents the icon from interfering with input */
         }
 
         button {
+            margin-top: 10px;
             width: 100%;
-            padding: 12px;
+            padding: 11px;
             background-color: #36ba46;
             color: white;
             border: none;
@@ -90,18 +95,19 @@
         }
 
         button:hover {
-            background-color: #2980b9;
+            background-color: #258130;
             transform: translateY(-2px);
         }
 
-        p {
+        p, small {
+            padding: 5px;
             text-align: center;
             color: #666;
         }
 
         a {
-            color: #3498db;
             text-decoration: none;
+            color: #101010;
             transition: color 0.3s ease;
         }
 
@@ -114,7 +120,7 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
         }
 
         .checkbox-group input[type="checkbox"] {
@@ -124,50 +130,85 @@
         .error-message {
             color: red;
             text-align: center;
-            margin-top: 15px;
+            margin-top: 14px;
+            font-size: 13px;
+        }
+
+        .home {
+            margin-top: 12px;
+            width: 100%;
+            padding: 10px;
+            background-color: #36ba46;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+            display: flex;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .home:hover {
+            background-color: #258130;
+            transform: translateY(-2px);
+            color: white;
+        }
+
+        .forget {
+            text-decoration: none;
+            color: black;
+        }
+
+        .forget:hover {
+            color: black;
         }
     </style>
 </head>
 <body>
     <form method="post" action="{% url 'login' %}">
         <h1 style="text-align: center; margin-bottom: 10px;">User Login</h1>
-        <p>Enter your credentials to access your account</p>
+        <p><small>Enter your credentials to access your dashboard</small></p>
         {% csrf_token %}
-        
+
+        <!-- Error Message for Incorrect Credentials -->
+        {% if form.non_field_errors %}
+            <div class="error-message">
+                {{ form.non_field_errors }}
+            </div>
+        {% endif %}
+
         <!-- Email Field with Icon -->
         <div class="form-group input-group">
             <label for="id_username" class="sr-only">{{ form.username.label }}</label>
             {{ form.username }}
             <i class="fas fa-envelope"></i> <!-- Icon on the right -->
             {% if form.username.errors %}
-                <div class="error">{{ form.username.errors }}</div>
+                <div class="error-message">{{ form.username.errors }}</div>
             {% endif %}
         </div>
-    
+
         <!-- Password Field with Icon -->
         <div class="form-group input-group">
             <label for="id_password" class="sr-only">{{ form.password.label }}</label>
             {{ form.password }}
             <i class="fas fa-lock"></i> <!-- Icon on the right -->
             {% if form.password.errors %}
-                <div class="error">{{ form.password.errors }}</div>
+                <div class="error-message">{{ form.password.errors }}</div>
             {% endif %}
         </div>
 
         <!-- Checkbox and Forget Password Link -->
         <div class="checkbox-group">
-            
-                <input type="checkbox" name="remember_me" id="remember_me">
-                <label for="remember_me">Remember Me</label>
-            
-            <a href="{% url 'password_reset' %}">Forget Password?</a>
+            <input type="checkbox" name="remember_me" id="remember_me">
+            <label for="remember_me">Remember Me</label>
+            <a href="{% url 'password_reset' %}" class="forget">Forget Password</a>
         </div>
 
         <!-- Submit Button -->
         <button type="submit" class="btn btn-primary">Login</button>
+        <a style="text-decoration: none;" class="home" href="{% url 'homePage' %}">Home Page</a>
     </form>
-
-    <!-- FontAwesome for Icons -->
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 </body>
 </html>

@@ -1,15 +1,15 @@
 /* Style for the user profile image with hover effect */
-.user-profile-pic {
+/* .user-profile-pic {
     width: 40px;
     height: 40px;
     border: 2px solid #2aa946;
-    transition: transform 0.3s ease, border-color 0.3s ease; /* Smooth transitions */
+    transition: transform 0.3s ease, border-color 0.3s ease; 
 }
 
 .user-profile-pic:hover {
-    transform: scale(1.1); /* Zoom on hover */
-    border-color: #2aa946; /* Darken the border on hover */
-}
+    transform: scale(1.1); 
+    border-color: #2aa946; 
+} */
 
 /* Dropdown menu styling */
 .dropdown-menu {
@@ -40,7 +40,7 @@
 }
 
 .dropdown-item:hover {
-    background-color: #007bff;
+    background-color: #103b69;
     color: white;
     padding-left: 20px; /* Slight padding animation on hover */
 }

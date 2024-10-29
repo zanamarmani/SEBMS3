@@ -1,0 +1,70 @@
+/* Style for the user profile image with hover effect */
+/* .user-profile-pic {
+    width: 40px;
+    height: 40px;
+    border: 2px solid #2aa946;
+    transition: transform 0.3s ease, border-color 0.3s ease; 
+}
+
+.user-profile-pic:hover {
+    transform: scale(1.1); 
+    border-color: #2aa946; 
+} */
+
+/* Dropdown menu styling */
+.dropdown-menu {
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    padding: 10px;
+    transition: all 0.4s ease; /* Smooth appearance */
+}
+
+/* Smooth drop-in effect */
+.dropdown-menu[aria-expanded="false"] {
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.dropdown-menu[aria-expanded="true"] {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Dropdown item styling */
+.dropdown-item {
+    font-size: 14px;
+    padding: 10px 15px;
+    color: #343a40;
+    transition: background-color 0.3s ease, color 0.3s ease, padding-left 0.3s ease;
+}
+
+.dropdown-item:hover {
+    background-color: #103b69;
+    color: white;
+    padding-left: 20px; /* Slight padding animation on hover */
+}
+
+/* Log Out button specific style */
+.logout-btn {
+    color: #dc3545;
+    transition: background-color 0.3s ease, padding-left 0.3s ease;
+}
+
+.logout-btn:hover {
+    background-color: #dc3545;
+    color: white;
+    padding-left: 20px;
+}
+
+/* Divider styling */
+.dropdown-divider {
+    border-color: #dcdcdc;
+}
+
+/* Add subtle box shadow to dropdown for a floating effect */
+.dropdown-menu.shadow-lg {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+
