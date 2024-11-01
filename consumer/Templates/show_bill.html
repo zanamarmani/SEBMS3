@@ -57,8 +57,12 @@
           <!-- Consumer and Meter Details -->
           <tr>
             <td colspan="2" rowspan="3">
-              <img style="width: 150px; height: 150px" src="https://billing.wpdgb.gov.pk/NA" alt="Meter Image" />
-            </td>
+              {% if meter_reading and meter_reading.meter_image %}
+                  <img src="{{ meter_reading.meter_image.url }}" alt="Meter Image" width="100" />
+              {% else %}
+                  No image available
+              {% endif %}
+          </td>
             <td>METER NO</td>
             <td>{{ current_bill.meter.meter_number }}</td>
             <td>BILL MONTH</td>
