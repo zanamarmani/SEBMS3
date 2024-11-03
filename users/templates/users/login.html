@@ -164,6 +164,19 @@
         .forget:hover {
             color: black;
         }
+        .input-group i {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #888;
+            font-size: 18px;
+        }
+        
+        /* Only disable pointer-events on icons that aren't the eye toggle */
+        .input-group i:not(.eye) {
+            pointer-events: none;
+        }
     </style>
 </head>
 <body>
@@ -183,21 +196,24 @@
         <div class="form-group input-group">
             <label for="id_username" class="sr-only">{{ form.username.label }}</label>
             {{ form.username }}
-            <i class="fas fa-envelope"></i> <!-- Icon on the right -->
+            <i class="fas fa-envelope"></i>
             {% if form.username.errors %}
                 <div class="error-message">{{ form.username.errors }}</div>
             {% endif %}
         </div>
 
-        <!-- Password Field with Icon -->
-        <div class="form-group input-group">
-            <label for="id_password" class="sr-only">{{ form.password.label }}</label>
-            {{ form.password }}
-            <i class="fas fa-lock"></i> <!-- Icon on the right -->
-            {% if form.password.errors %}
-                <div class="error-message">{{ form.password.errors }}</div>
-            {% endif %}
-        </div>
+        <!-- Password Field with Icon and Eye Toggle -->
+        <!-- Password Field with Icon and Eye Toggle -->
+<div class="form-group input-group">
+    <label for="id_password" class="sr-only">{{ form.password.label }}</label>
+    {{ form.password }}
+    <i class="fas fa-lock"></i>
+    <i class="fas fa-eye-slash eye" id="togglePassword"></i> <!-- Eye icon for toggling -->
+    {% if form.password.errors %}
+        <div class="error-message">{{ form.password.errors }}</div>
+    {% endif %}
+</div>
+
 
         <!-- Checkbox and Forget Password Link -->
         <div class="checkbox-group">
@@ -210,5 +226,19 @@
         <button type="submit" class="btn btn-primary">Login</button>
         <a style="text-decoration: none;" class="home" href="{% url 'homePage' %}">Home Page</a>
     </form>
+    <script>
+        const togglePassword = document.getElementById('togglePassword');
+        const passwordField = document.querySelector('input[type="password"]');
+
+        togglePassword.addEventListener('click', () => {
+            if (passwordField.type === 'password') {
+                passwordField.type = 'text';
+                togglePassword.classList.replace('fa-eye-slash', 'fa-eye');
+            } else {
+                passwordField.type = 'password';
+                togglePassword.classList.replace('fa-eye', 'fa-eye-slash');
+            }
+        });
+    </script>
 </body>
 </html>

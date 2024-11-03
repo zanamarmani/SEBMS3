@@ -38,6 +38,35 @@
                     </div>
                 </form>
 
+                <!-- Filter Form -->
+                <form method="get" class="row g-3 mb-4">
+                    <div class="col-auto">
+                        <input type="text" name="consumer_name" class="form-control" placeholder="Consumer Name" value="{{ consumer_name }}">
+                    </div>
+                    <div class="col-auto">
+                        <input type="text" name="consumer_number" class="form-control" placeholder="Consumer Number" value="{{ consumer_number }}">
+                    </div>
+                    <div class="col-auto">
+                        <select name="consumer_division" class="form-select">
+                            <option value="">All Divisions</option>
+                            <option value="division1" {% if consumer_division == 'division1' %}selected{% endif %}>Division 1</option>
+                            <option value="division2" {% if consumer_division == 'division2' %}selected{% endif %}>Division 2</option>
+                            <option value="division3" {% if consumer_division == 'division3' %}selected{% endif %}>Division 3</option>
+                        </select>
+                    </div>
+                    <div class="col-auto">
+                        <select name="consumer_tariff" class="form-select">
+                            <option value="">All Tariffs</option>
+                            <option value="domestic" {% if consumer_tariff == 'domestic' %}selected{% endif %}>Domestic</option>
+                            <option value="commercial" {% if consumer_tariff == 'commercial' %}selected{% endif %}>Commercial</option>
+                            <option value="industrial" {% if consumer_tariff == 'industrial' %}selected{% endif %}>Industrial</option>
+                        </select>
+                    </div>
+                    <div class="col-auto">
+                        <button type="submit" class="btn btn-primary">Filter</button>
+                    </div>
+                </form>
+
                 <div class="tab-content" id="orders-table-tab-content">
                     <div class="tab-pane fade show active" id="orders-all" role="tabpanel" aria-labelledby="orders-all-tab">
                         <div class="app-card app-card-orders-table shadow-sm mb-5">
@@ -47,6 +76,13 @@
                                         <thead>
                                             <tr class="table-header text-center">
                                                 <th>ID</th>
+                                                <th>Name</th>
+                                                <th>Consumer Number</th>
+                                                <th>Area</th>
+                                                <th>Tariff</th>
+                                                <th>Approved</th>
+                                                <th>Action</th>
+                                            </tr>
                                                 <th>Name</th>
                                                 <th>Consumer Number</th>
                                                 <th>Area</th>

@@ -70,6 +70,13 @@
             {% endif %}
                 </td>
         <td>
+            {% if consumer.approved %}
+                Approved
+                {% else %}
+                Pending
+            {% endif %}
+                </td>
+        <td>
             {% if not consumer.approved %}
                 <a href="{% url 'officestaff:delete_unapproved_consumer' consumer.pk %}" 
                class="btn-delete" 
