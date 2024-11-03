@@ -58,6 +58,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'users.middlewares.NoCacheMiddleware',
 ]
 
 ROOT_URLCONF = 'SEBMS.urls'
@@ -113,6 +114,24 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# settings.py
+import sys
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'stream': sys.stdout,
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'DEBUG',
+    },
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
@@ -143,6 +162,8 @@ PASSWORD_RESET_DOMAIN = 'www.sebms.com'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'users.User'
 SESSION_COOKIE_SECURE = False  # Set this to True in production (HTTPS)
+SESSION_COOKIE_AGE = 1200  # 20 minutes for example
+
 CSRF_COOKIE_SECURE = False  # Set this to True in production (HTTPS)
 
 # for email to set password

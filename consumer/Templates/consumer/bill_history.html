@@ -1,0 +1,44 @@
+<!-- bill_history.html -->
+{% extends "consumer/profile_consumer.html" %}
+
+{% block content %}
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">Bill History</h5>
+        <table class="table custom-table">
+            <thead>
+                <tr>
+                    <th>Bill Month</th>
+                    <th>Due Date</th>
+                    <th>Units Consumed</th>
+                    <th>Payable Amount</th>
+                    <th>Gross Total</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for bill in bills %}
+                <tr>
+                    <td>{{ bill.billmonth|date:"F Y" }}</td>
+                    <td>{{ bill.duedate|date:"d-m-Y" }}</td>
+                    <td>{{ bill.unitsconsumed }}</td>
+                    <td>${{ bill.payableamount }}</td>
+                    <td>${{ bill.gross_total }}</td>
+                    <td>
+                        {% if bill.paid %}
+                            <span class="text-success">Paid</span>
+                        {% else %}
+                            <span class="text-danger">Unpaid</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center">No bill history available.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

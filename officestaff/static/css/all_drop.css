@@ -40,21 +40,9 @@
 }
 
 .dropdown-item:hover {
-    background-color: #103b69;
+    background-color: #343a40;
     color: white;
     padding-left: 20px; /* Slight padding animation on hover */
-}
-
-/* Log Out button specific style */
-.logout-btn {
-    color: #dc3545;
-    transition: background-color 0.3s ease, padding-left 0.3s ease;
-}
-
-.logout-btn:hover {
-    background-color: #dc3545;
-    color: white;
-    padding-left: 20px;
 }
 
 /* Divider styling */

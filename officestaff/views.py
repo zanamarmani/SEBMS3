@@ -1,46 +1,31 @@
 from decimal import Decimal
-from msilib.schema import File
-import os
-from tempfile import NamedTemporaryFile
 from uuid import uuid4
-from uuid import uuid4
-from django.shortcuts import render
-
-# Create your views here.
-
-
-from django.http import HttpResponse
-import urllib
-from SDO.models import Tariff
-
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib import messages
+from django.utils import timezone
+from django.core.mail import send_mail
+from django.views.generic import ListView
 from SEBMS import settings
-from SEBMS import settings
+
+from bill.views import calculate_amount_due, calculate_average_units
 from consumer.forms import ConsumerRegistrationForm
 from consumer.models import Consumer
 from meterreader.forms import MeterAssignmentForm
 from meterreader.models import Meter, MeterReading
-from django.shortcuts import render, get_object_or_404, redirect
-from django.utils import timezone
-from django.contrib import messages
 from officestaff.forms import OfficeStaffForm
 from officestaff.models import OfficeStaff
 from officestaff.utils import officestaff_required
 from users.models import User
-
 from bill.models import Bill
-
+from SDO.models import Tariff
+from .firebase_utils import fetch_meter_list
 from datetime import date, datetime, timedelta
-from django.core.mail import send_mail
-
-
-from .firebase_utils import fetch_meter_list 
-
-from django.contrib.auth.decorators import login_required
-
-from bill.views import calculate_amount_due, calculate_average_units
-
 import os
-import urllib.request
+from django.core.files import File
+import requests
+from io import BytesIO
+
+
 
 @officestaff_required
 def Home(request):
@@ -73,7 +58,7 @@ def register_consumer(request):
             except:
                 messages.error(request, 'Failed to Register Consumer try again with different email')
                 return redirect('officestaff:registerconsumer')  # Redirect to a success page or desired location
-            return redirect('officestaff:home')  # Redirect to a success page or desired location
+            return redirect('officestaff:dashboard')  # Redirect to a success page or desired location
         else:
             messages.error(request, 'Failed to Register try different email or consumer number')
     else:
@@ -84,10 +69,31 @@ def register_consumer(request):
 @officestaff_required
 def list_consumers(request):
     consumers = Consumer.objects.all()
+
+    # Get filters from request
+    consumer_name = request.GET.get('consumer_name', '')
+    consumer_number = request.GET.get('consumer_number', '')
+    consumer_division = request.GET.get('consumer_division', '')
+    consumer_tariff = request.GET.get('consumer_tariff', '')
+
+    # Apply filters if present
+    if consumer_name:
+        consumers = consumers.filter(consumer_name__icontains=consumer_name)
+    if consumer_number:
+        consumers = consumers.filter(consumer_number__icontains=consumer_number)
+    if consumer_division:
+        consumers = consumers.filter(consumer_division=consumer_division)
+    if consumer_tariff:
+        consumers = consumers.filter(consumer_tariff__tariff_type=consumer_tariff)
+
     title = "Consumer"
     context = {
         "consumers": consumers,
         "title": title,
+        "consumer_name": consumer_name,
+        "consumer_number": consumer_number,
+        "consumer_division": consumer_division,
+        "consumer_tariff": consumer_tariff,
     }
     return render(request, 'list_consumers.html', context)
 
@@ -132,72 +138,31 @@ def save_meter_data_to_db(request):
             meter = Meter.objects.filter(meter_number=meter_serial_no).first()
             if not meter:
                 continue
-        try:
-            # Get or skip if the meter doesn't exist
-            meter = Meter.objects.filter(meter_number=meter_serial_no).first()
-            if not meter:
-                continue
 
-            # Check if the reading already exists
-            if MeterReading.objects.filter(meter=meter, reading_date=date_obj).exists():
-                continue
             # Check if the reading already exists
             if MeterReading.objects.filter(meter=meter, reading_date=date_obj).exists():
                 continue
 
             # Download the image from Firebase if available
-            
+            image_file = None
             if meter_image_url:
                 try:
-                    response = urllib.request.urlopen(meter_image_url)
-                    if response.status == 200:
+                    response = requests.get(meter_image_url, stream=True)
+                    if response.status_code == 200:
                         image_filename = f"{uuid4()}.jpg"
-                        media_path = os.path.join(settings.MEDIA_ROOT, 'meter_images')
-                        os.makedirs(media_path, exist_ok=True)
-                        file_path = os.path.join(media_path, image_filename)
-
-                        with open(file_path, 'wb') as file:
-                            file.write(response.read())
-
-                        with open(file_path, 'rb') as img_file:
-                            image_file = File(img_file, name=image_filename)
+                        image_content = BytesIO(response.content)
+                        image_file = File(image_content, name=image_filename)
                     else:
-                        image_file = None
+                        print(f"Failed to download image: HTTP status {response.status_code}")
                 except Exception as e:
                     print(f"Failed to download image: {e}")
-                    image_file = None
-            else:
-                image_file = None
-            # Download the image from Firebase if available
-            
-            if meter_image_url:
-                try:
-                    response = urllib.request.urlopen(meter_image_url)
-                    if response.status == 200:
-                        image_filename = f"{uuid4()}.jpg"
-                        media_path = os.path.join(settings.MEDIA_ROOT, 'meter_images')
-                        os.makedirs(media_path, exist_ok=True)
-                        file_path = os.path.join(media_path, image_filename)
-
-                        with open(file_path, 'wb') as file:
-                            file.write(response.read())
-
-                        with open(file_path, 'rb') as img_file:
-                            image_file = File(img_file, name=image_filename)
-                    else:
-                        image_file = None
-                except Exception as e:
-                    print(f"Failed to download image: {e}")
-                    image_file = None
-            else:
-                image_file = None
 
             # Get the last reading, default to 500 if no prior readings exist
             last_reading_record = MeterReading.objects.filter(meter=meter).order_by('-reading_date').first()
             last_reading = last_reading_record.new_reading if last_reading_record else 500
 
             # DEBUG: Log what's happening before creating the object
-            print(f'meter url is  {meter_image_url}')
+            print(f"Meter image URL: {meter_image_url}")
             print(f"Saving new reading for meter: {meter_serial_no}, Date: {date_obj}")
 
             # Save the new reading
@@ -209,28 +174,13 @@ def save_meter_data_to_db(request):
                 reading_date=date_obj,
                 processed=False
             )
-            # Save the new reading
-            meter_reading = MeterReading.objects.create(
-                meter=meter,
-                last_reading=last_reading,
-                new_reading=reading,
-                meter_status=status,
-                reading_date=date_obj,
-                processed=False
-            )
 
             # Save the image if it exists
             if image_file:
                 meter_reading.meter_image.save(image_filename, image_file)
-                meter_reading.save()
-            # Save the image if it exists
-            if image_file:
-                meter_reading.meter_image.save(image_filename, image_file)
-                meter_reading.save()
-
-        except Exception as e:
-            print(f"Error while saving meter reading: {e}")
-
+            else:
+                print("No image file available; skipping image save.")
+                
         except Exception as e:
             print(f"Error while saving meter reading: {e}")
 
@@ -250,7 +200,7 @@ def paid_bills(request):
     # Fetch paid bills from the database
     bills = Bill.objects.filter(paid=True)
     title="Paid Bills"
-    return render(request, 'paid_bills.html', {'paid_bills': bills,'title':title})
+    return render(request, 'all_bills.html', {'bills': bills,'title':title})
 @officestaff_required
 def unpaid_bills(request):
     # Fetch unpaid bills from the database
@@ -285,6 +235,7 @@ def Generate_bill(request):
 
         consumer = meter.consumer
         tariff = consumer.consumer_tariff
+        bill_month = reading.reading_date
         average_units = calculate_average_units(meter)
         
 
@@ -308,7 +259,7 @@ def Generate_bill(request):
 
         # Create a new Bill object
         bill = Bill.objects.create(
-            billmonth=timezone.now().date(),
+            billmonth=bill_month,
             duedate=timezone.now().date() + timedelta(days=15),
             detectionunit=average_units,
             averageunit=average_units,
@@ -468,4 +419,4 @@ def consumer_profile(request, consumer_id):
     consumer = get_object_or_404(Consumer, id=consumer_id)
     bill = Bill.objects.filter(meter__consumer_id=consumer_id).first()
     
-    return render(request, 'sdo/profile_consumer.html', {'bill': bill})
+    return render(request, 'consumer_profile.html', {'bill': bill,'consumer': consumer})

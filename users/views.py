@@ -63,7 +63,7 @@ def user_login(request):
         elif user.is_superuser:
             return redirect('SDO:dashboard')  
         elif user.is_office_staff:
-            return redirect('officestaff:home')
+            return redirect('officestaff:dashboard')
         elif user.is_meter_reader:
             return redirect('meterreader:home')
         elif user.is_consumer:

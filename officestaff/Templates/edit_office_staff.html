@@ -1,21 +1,162 @@
-<!-- edit_office_staff.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Office Staff Profile</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <style>
+             /* General Styling */
+      @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap");
+    /* Enhanced Body Styling */
+body {
+    font-family: "Poppins", sans-serif;
+    background: linear-gradient(135deg, #dde1e7, #c1ccd5);
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+/* Profile Edit Container */
+.profile-edit-container {
+    margin-top: 50px;
+    margin-bottom: 15px;
+    background: #ffffff;
+    border-radius: 15px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    max-width: 1000px;
+    width: 100%;
+    padding: 40px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* .profile-edit-container:hover {
+    transform: scale(1.02);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+} */
+
+.profile-edit-container h1 {
+    color: #34495e;
+    margin-bottom: 20px;
+    font-size: 26px;
+    text-align: center;
+}
+
+/* Form Styling */
+.profile-edit-form {
+    display: grid;
+    gap: 15px;
+}
+
+.profile-edit-form p {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin: 0;
+}
+
+.profile-edit-form p label {
+    text-align: left;
+    font-size: 14px;
+    font-weight: bold;
+    color: #34495e;
+    margin-bottom: 5px;
+}
+
+.profile-edit-form input,
+.profile-edit-form select {
+    padding: 12px;
+    width: 100%;
+    max-width: 100%;
+    border-radius: 10px;
+    border: 1px solid #bdc3c7;
+    font-size: 16px;
+    color: #34495e;
+    transition: border-color 0.3s ease;
+    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.profile-edit-form input:focus,
+.profile-edit-form select:focus {
+    border-color: #2980b9;
+    outline: none;
+    box-shadow: 0 0 5px rgba(0, 128, 255, 0.2);
+}
+
+/* Button Container for alignment */
+.button-container {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 25px;
+}
+
+.save-btn
+ {
+    background-color: #2980b9;
+    padding: 12px 40px;
+    color: white;
+    text-align: center;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    
+}
+.cancel-btn {
+    background-color: #bdc3c7;
+    color: #34495e;
+    /* background-color: #bdc3c7; */
+    padding: 12px 20px;
+    /* color: white; */
+    text-align: center;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    text-decoration: none;
+    
+}
+
+
+
+.save-btn:hover {
+    background-color: #2471a3;
+    transform: translateY(-2px);
+}
+
+
+
+.cancel-btn:hover {
+    background-color: #a4a7a9;
+    transform: translateY(-2px);
+}
+
+    </style>
 </head>
 <body>
-    <div class="container mt-5">
-        <h2>Edit Office Staff Profile: {{ office_staff.first_name }} {{ office_staff.last_name }}</h2>
-        <form method="POST">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit" class="btn btn-primary">Update</button>
-            <a href="{% url 'officestaff:show_profile' %}" class="btn btn-secondary">Cancel</a>
-        </form>
-    </div>
+
+<div class="profile-edit-container">
+    <h1>Edit Office Staff Profile: {{ office_staff.first_name }} {{ office_staff.last_name }}</h1>
+
+    <!-- Form for Editing Profile -->
+    <form method="POST" class="profile-edit-form">
+        {% csrf_token %}
+        {{ form.as_p }}
+        
+        <!-- Save and Cancel Buttons -->
+        <div class="button-container">
+            <button type="submit" class="save-btn">Update</button>
+            <a href="{% url 'officestaff:show_profile' %}" class="cancel-btn">Cancel</a>
+        </div>
+        
+    </form>
+</div>
 </body>
 </html>

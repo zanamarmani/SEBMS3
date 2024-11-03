@@ -1,4 +1,4 @@
-  {% extends 'sdo/base.html' %}
+{% extends 'sdo/base.html' %}
 
 {% block content %}
 
@@ -7,9 +7,24 @@
         <div class="container-xl">
             <div class="row g-3 mb-4 align-items-center justify-content-between">
                 <div class="col-auto">
-                    <h1 class="app-page-title mb-0">{{title}}</h1>
+                    <h1 class="app-page-title mb-0">{{ title }}</h1>
                 </div>
 
+                <!-- Filtering Form -->
+                <form method="get" class="d-flex mb-3">
+                    <input type="text" name="email" placeholder="Filter by Email" class="form-control me-2"
+                           value="{{ email_filter }}">
+                    <select name="role" class="form-select me-2">
+                        <option value="">All Roles</option>
+                        <option value="office_staff" {% if role_filter == 'office_staff' %}selected{% endif %}>Office Staff</option>
+                        <option value="meter_reader" {% if role_filter == 'meter_reader' %}selected{% endif %}>Meter Reader</option>
+                        <option value="consumer" {% if role_filter == 'consumer' %}selected{% endif %}>Consumer</option>
+                        <option value="sdo" {% if role_filter == 'sdo' %}selected{% endif %}>SDO</option>
+                    </select>
+                    <button type="submit" class="btn btn-primary">Filter</button>
+                </form>
+
+                <!-- Users Table -->
                 <div class="tab-content" id="orders-table-tab-content">
                     <div class="tab-pane fade show active" id="orders-all" role="tabpanel" aria-labelledby="orders-all-tab">
                         <div class="app-card app-card-orders-table shadow-sm mb-5">
@@ -18,38 +33,26 @@
                                     <table class="table app-table-hover mb-0 text-left table-green">
                                         <thead>
                                             <tr class="table-header">
-                                              <th>Email</th>
-                                              <th>Role</th>
-                                              <th style="text-align: center;" >Action</th>
+                                                <th>Email</th>
+                                                <th>Role</th>
+                                                <th style="text-align: center;">Action</th>
                                             </tr>
-                                            
                                         </thead>
                                         <tbody>
                                             {% for user in users %}
-											<tr class="table-row">
-                        <td>{{ user.email }}</td>
-                        <td>
-                          {% if user.is_office_staff %}
-                          Office Staff
-                          {% elif user.is_meter_reader %}
-                          Meter Reader
-                          {% elif user.is_consumer %}
-                          Consumer
-                          {% else %}
-                          SDO
-                          {% endif %}
-                        </td>
-                
-                        {% if user.pk %} 
-                        <td style="text-align: center;">
-                          <a class="btn-sm app-btn-secondary py-1" href="{% url 'SDO:user_update' user.pk %}">Update User</a>
-                          <a class="btn-sm app-btn-secondary py-1" href="{% url 'SDO:update_password' user.pk %}">Change User Password</a>
-                          <a class="btn-sm app-btn-secondary py-1 " href="{% url 'SDO:user_delete' user.pk %}">Delete User</a>
-                        </td>
-                        {% endif %} 
-                      </tr>
-                      {% endfor %}
-                    </tbody>
+                                                <tr class="table-row">
+                                                    <td>{{ user.email }}</td>
+                                                    <td>
+                                                        {% if user.is_office_staff %}Office Staff{% elif user.is_meter_reader %}Meter Reader{% elif user.is_consumer %}Consumer{% else %}SDO{% endif %}
+                                                    </td>
+                                                    <td style="text-align: center;">
+                                                        <a class="btn-sm app-btn-secondary py-1" href="{% url 'SDO:user_update' user.pk %}">Update User</a>
+                                                        <a class="btn-sm app-btn-secondary py-1" href="{% url 'SDO:update_password' user.pk %}">Change User Password</a>
+                                                        <a class="btn-sm app-btn-secondary py-1" href="{% url 'SDO:user_delete' user.pk %}">Delete User</a>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
                                     </table>
                                 </div><!--//table-responsive-->
                             </div><!--//app-card-body-->

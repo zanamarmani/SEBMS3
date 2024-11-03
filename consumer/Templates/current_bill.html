@@ -1,9 +1,0 @@
-<h2>Current Bill</h2>
-{% if current_bill %}
-  <p>Bill Month: {{ current_bill.billmonth }}</p>
-  <p>Units Consumed: {{ current_bill.unitsconsumed }}</p>
-  <p>Amount: {{ current_bill.payableamount }}</p>
-  <p>Status: {% if current_bill.paid %}Paid{% else %}Unpaid{% endif %}</p>
-{% else %}
-  <p>No current bill found.</p>
-{% endif %}

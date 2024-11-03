@@ -1,6 +1,7 @@
 from django.shortcuts import redirect, render,get_object_or_404
 
 # Create your views here.
+from django.urls import reverse
 from django.utils.crypto import get_random_string
 
 from SDO.utils import sdo_required
@@ -23,6 +24,9 @@ from .forms import SDOProfileForm,SDOProfileCreateForm
 from django.contrib.auth import login
 from .forms import CustomUserCreationForm
 
+import logging
+
+logger = logging.getLogger(__name__)
 
 @sdo_required
 def dashboard(request):
@@ -87,26 +91,48 @@ def reject_new_consumers(request):
     return render(request, 'sdo/approve_new_consumers.html', {'consumers': consumer})
     # return redirect('approve_new_consumers')
 
-@sdo_required
-def add_user(request):
-    if request.method == 'POST':
-        form = UserForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('SDO:show_all_users')
-    else:
-        form = UserForm()
-    return render(request, 'sdo/add_user.html', {'form': form})
+
+# def add_user(request):
+#     if request.method == 'POST':
+#         form = UserForm(request.POST)
+#         if form.is_valid():
+#             form.save()
+#             return redirect('SDO:show_all_users')
+#     else:
+#         form = UserForm()
+#     return render(request, 'sdo/add_user.html', {'form': form})
 
 @sdo_required
 def show_all_consumers(request):
     consumers = Consumer.objects.all()
+
+    # Get filters from request
+    consumer_name = request.GET.get('consumer_name', '')
+    consumer_number = request.GET.get('consumer_number', '')
+    consumer_division = request.GET.get('consumer_division', '')
+    consumer_tariff = request.GET.get('consumer_tariff', '')
+
+    # Apply filters if present
+    if consumer_name:
+        consumers = consumers.filter(consumer_name__icontains=consumer_name)
+    if consumer_number:
+        consumers = consumers.filter(consumer_number__icontains=consumer_number)
+    if consumer_division:
+        consumers = consumers.filter(consumer_division=consumer_division)
+    if consumer_tariff:
+        consumers = consumers.filter(consumer_tariff__tariff_type=consumer_tariff)
+
     title = "Consumer"
     context = {
         "consumers": consumers,
         "title": title,
+        "consumer_name": consumer_name,
+        "consumer_number": consumer_number,
+        "consumer_division": consumer_division,
+        "consumer_tariff": consumer_tariff,
     }
     return render(request, 'sdo/show_all_consumers.html', context)
+
 
 @sdo_required
 def consumer_profile(request, consumer_id):
@@ -116,13 +142,41 @@ def consumer_profile(request, consumer_id):
     # Fetch the bill for the current consumer
     bill = Bill.objects.filter(meter__consumer_id=consumer_id).first()
     
-    return render(request, 'sdo/profile_consumer.html', {'bill': bill})
+    return render(request, 'sdo/profile_consumer.html', {'bill': bill,'consumer': consumer})
 
 @sdo_required
 def show_all_users(request):
+    # Get filter parameters from GET request
+    email_filter = request.GET.get('email', '')
+    role_filter = request.GET.get('role', '')
+
+    # Start with all users
     users = User.objects.all()
-    title="Users"
-    return render(request,'sdo/show_all_users.html', {'users': users ,'title': title})
+
+    # Filter by email if provided
+    if email_filter:
+        users = users.filter(email__icontains=email_filter)
+
+    # Filter by role
+    if role_filter == 'office_staff':
+        users = users.filter(is_office_staff=True)
+    elif role_filter == 'meter_reader':
+        users = users.filter(is_meter_reader=True)
+    elif role_filter == 'consumer':
+        users = users.filter(is_consumer=True)
+    elif role_filter == 'sdo':
+        users = users.filter(is_sdo=True)
+
+    # Pass the filters back to the template for display
+    title = "Users"
+    context = {
+        'users': users,
+        'title': title,
+        'email_filter': email_filter,
+        'role_filter': role_filter,
+    }
+    return render(request, 'sdo/show_all_users.html', context)
+
 
 
 
@@ -254,10 +308,7 @@ def create_user(request):
             user.is_meter_reader = form.cleaned_data['is_meter_reader']
             user.is_consumer = form.cleaned_data['is_consumer']
             user.save()
-
-            # Log in the user or redirect to the appropriate page
-            login(request, user)
-            return redirect('SDO:dashboard')
+            return redirect('SDO:show_all_users')
 
     else:
         form = CustomUserCreationForm()
