@@ -46,6 +46,7 @@
                                     <table class="table app-table-hover mb-0 text-left table-green">
                                         <thead>
                                             <tr class="table-header text-center">
+                                            <tr class="table-header text-center">
                                                 <th>ID</th>
                                                 <th>Name</th>
                                                 <th>Consumer Number</th>
@@ -56,6 +57,32 @@
                                             </tr>
                                         </thead>
                                         <tbody>
+                                            {% for consumer in consumers %}
+                                                <tr class="table-row text-center">
+                                                    <td>{{ consumer.id }}</td>
+                                                    <td>{{ consumer.consumer_name }}</td>
+                                                    <td>{{ consumer.consumer_number }}</td>
+                                                    <td>{{ consumer.consumer_division }}</td>
+                                                    <td>{{ consumer.consumer_tariff }}</td>
+                                                    <td>
+                                                        {% if consumer.approved %}
+                                                            Approved
+                                                        {% else %}
+                                                            Pending
+                                                        {% endif %}
+                                                    </td>
+                                                    <td>
+                                                        <a href="{% url 'SDO:consumer_profile' consumer.pk %}">
+                                                            <button class="btn-view-details" type="button">View Details</button>
+                                                        </a>
+                                                        <a href="{% url 'SDO:delete_consumer' consumer.pk %}" 
+                                                           class="btn-delete" 
+                                                           onclick="return confirmDelete();">
+                                                            Delete
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
                                             {% for consumer in consumers %}
                                                 <tr class="table-row text-center">
                                                     <td>{{ consumer.id }}</td>

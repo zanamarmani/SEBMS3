@@ -8,7 +8,36 @@
             <div class="row g-3 mb-4 align-items-center justify-content-between">
                 <div class="col-auto">
                     <h1 class="app-page-title mb-0"> All Consumer</h1>
+                    <h1 class="app-page-title mb-0"> All Consumer</h1>
                 </div>
+<!-- Filter Form -->
+<form method="get" class="row g-3 mb-2">
+    <div class="col-auto">
+        <input type="text" name="consumer_name" class="form-control" placeholder="Consumer Name" value="{{ consumer_name }}">
+    </div>
+    <div class="col-auto">
+        <input type="text" name="consumer_number" class="form-control" placeholder="Consumer Number" value="{{ consumer_number }}">
+    </div>
+    <div class="col-auto">
+        <select name="consumer_division" class="form-select">
+            <option value="">All Divisions</option>
+            <option value="division1" {% if consumer_division == 'division1' %}selected{% endif %}>Division 1</option>
+            <option value="division2" {% if consumer_division == 'division2' %}selected{% endif %}>Division 2</option>
+            <option value="division3" {% if consumer_division == 'division3' %}selected{% endif %}>Division 3</option>
+        </select>
+    </div>
+    <div class="col-auto">
+        <select name="consumer_tariff" class="form-select">
+            <option value="">All Tariffs</option>
+            <option value="domestic" {% if consumer_tariff == 'domestic' %}selected{% endif %}>Domestic</option>
+            <option value="commercial" {% if consumer_tariff == 'commercial' %}selected{% endif %}>Commercial</option>
+            <option value="industrial" {% if consumer_tariff == 'industrial' %}selected{% endif %}>Industrial</option>
+        </select>
+    </div>
+    <div class="col-auto">
+        <button type="submit" class="btn btn-primary">Filter</button>
+    </div>
+</form>
 <!-- Filter Form -->
 <form method="get" class="row g-3 mb-2">
     <div class="col-auto">
@@ -72,6 +101,7 @@
         <td>
             {% if not consumer.approved %}
                 <a href="{% url 'officestaff:delete_unapproved_consumer' consumer.pk %}" 
+               class="btn-delete" 
                class="btn-delete" 
                onclick="return confirmDelete();">
                 Delete
