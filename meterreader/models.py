@@ -8,7 +8,7 @@ class Meter(models.Model):
         ('double', 'Double Phase'),
         ('three', 'Three Phase'),
     ]
-    meter_number = models.IntegerField(null=True, unique=True)  # Meter number should be unique
+    meter_number = models.CharField(max_length=10,null=True, unique=True)  # Meter number should be unique
     meter_type = models.CharField(max_length=10, choices=METER_TYPE_CHOICES, null=True)
     consumer = models.ForeignKey(Consumer, on_delete=models.CASCADE, null=True)  # Many-to-one to Consumer
 

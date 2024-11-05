@@ -26,5 +26,3 @@ urlpatterns = [
     path('edit_office_staff/', views.edit_office_staff, name='edit_office_staff'),
     path('consumer/<int:consumer_id>/', views.consumer_profile, name='consumer_profile'),
 ]
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

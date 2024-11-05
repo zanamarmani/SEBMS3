@@ -1,0 +1,15 @@
+/* Make the table responsive on smaller screens */
+.table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.custom-table th, .custom-table td {
+    text-align: center; /* You can adjust as needed */
+}
+
+@media (max-width: 768px) {
+    .custom-table th, .custom-table td {
+        font-size: 14px; /* Adjust the font size for smaller screens */
+    }
+}

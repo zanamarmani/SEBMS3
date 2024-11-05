@@ -48,7 +48,7 @@
           <tr>
             <th colspan="6">
               <img src="https://billing.wpdgb.gov.pk/assets/images/logo.png" style="height: 60px" />
-              <div>WATER & POWER DEPARTMENT GILGIT BALTISTAN</div>
+              <div>SMART ELECTRICITY BILLING MANAGEMENT SYSTEM</div>
               <div>Electricity Consumer Bill</div>
             </th>
           </tr>
@@ -57,8 +57,12 @@
           <!-- Consumer and Meter Details -->
           <tr>
             <td colspan="2" rowspan="3">
-              <img style="width: 150px; height: 150px" src="https://billing.wpdgb.gov.pk/NA" alt="Meter Image" />
-            </td>
+              {% if meter_reading and meter_reading.meter_image %}
+                  <img src="{{ meter_reading.meter_image.url }}" alt="Meter Image" width="100" />
+              {% else %}
+                  No image available
+              {% endif %}
+          </td>
             <td>METER NO</td>
             <td>{{ current_bill.meter.meter_number }}</td>
             <td>BILL MONTH</td>
@@ -132,7 +136,7 @@
       <button class="print-btn" onclick="window.print()">Print Bill</button>
       
       <p style="font-size: 10px">
-        Designed By zanam Technologies (www.sebms.pk)
+        Smart Electricitty Billking Management System
       </p>
     </div>
     <script

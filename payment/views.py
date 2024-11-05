@@ -1,4 +1,5 @@
 from datetime import timezone
+from decimal import Decimal
 from django.shortcuts import get_object_or_404, render
 from django.shortcuts import render
 import hashlib
@@ -8,6 +9,7 @@ from django.conf import settings
 from django.http import HttpResponseRedirect
 
 from bill.models import Bill
+from payment.models import Payment
 # Create your views here.
 def payment_gateway(request, bill_id):
     bill = get_object_or_404(Bill, id=bill_id)
@@ -73,10 +75,22 @@ def payment_success(request):
         txn_ref = request.POST.get('pp_TxnRefNo')
         amount = request.POST.get('pp_Amount')
         payment_status = request.POST.get('pp_ResponseCode')  # Example: JazzCash may send this to indicate success or failure
+        pp_BillReference = request.POST.get('pp_BillReference')  # Example: The ID of the bill in your database
 
         
-        if payment_status == '000':  # Example: Assuming '000' means success
+        if payment_status == '199':  # Example: Assuming '000' means success
             # Update the payment status in your database
+            bill = Bill.objects.get(id=pp_BillReference)
+            payment = Payment.objects.create(
+                bill=bill,
+                bank_charges=0.00,  # Example bank charge
+                arrears_charges=0.00,  # Assuming you have arrears field in the Bill model
+                total_amount_paid=Decimal(amount), # Convert amount to a float, then divide,  # Convert to regular units
+                txn_id= txn_ref
+                )
+            bill.payableamount -= payment.total_amount_paid
+            bill.paid = True
+            bill.save()
             # You can also retrieve the related bill and mark it as paid
             return render(request, 'payment/payment_success.html', {
                 'txn_ref': txn_ref,

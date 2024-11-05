@@ -82,8 +82,8 @@
 <img src="https://bootdey.com/img/Content/avatar/avatar7.png" alt="Admin" class="rounded-circle" width="150">
 <div class="mt-3">
     
-<h4>{{ bill.meter.consumer.consumer_name }}</h4>
-<p class="text-secondary mb-1">{%if bill.meter.consumer.approved %}
+<h4>{{ consumer.consumer_name }}</h4>
+<p class="text-secondary mb-1">{%if consumer.approved %}
     Registered Consumer 
     {% else %}
     Aproval Pending
@@ -125,7 +125,7 @@
 <h6 class="mb-0">Full Name</h6>
 </div>   
 <div class="col-sm-9 text-secondary">
-    {{ bill.meter.consumer.consumer_name }}
+    {{ consumer.consumer_name }}
 </div>
 </div>
 
@@ -135,7 +135,7 @@
 <h6 class="mb-0">Consumer Number</h6>
 </div>
 <div class="col-sm-9 text-secondary">
-    {{ bill.meter.consumer.consumer_number }}
+    {{consumer.consumer_number }}
 </div>
 </div>
 <hr>
@@ -144,7 +144,7 @@
 <h6 class="mb-0">Address</h6>
 </div>
 <div class="col-sm-9 text-secondary">
-    {{ bill.meter.consumer.consumer_address }}
+    {{ consumer.consumer_address }}
 </div>
 </div>
 <hr>
@@ -162,7 +162,7 @@
     <h6 class="mb-0">Tariff</h6>
     </div>
     <div class="col-sm-9 text-secondary">
-        {{ bill.meter.consumer.consumer_tariff }}
+        {{ consumer.consumer_tariff }}
     </div>
     </div>
 <hr>
@@ -171,7 +171,7 @@
     <h6 class="mb-0">Division</h6>
     </div>
     <div class="col-sm-9 text-secondary">
-        {{ bill.meter.consumer.consumer_division }}
+        {{ consumer.consumer_division }}
     </div>
     </div>
 <hr>
@@ -201,7 +201,7 @@
         
         {% if bill.paid %}
             Paid
-            {% else %}
+            {% elif not bill.paid%}
             Not Paid
         {% endif %}
             
