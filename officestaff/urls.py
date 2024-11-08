@@ -25,4 +25,5 @@ urlpatterns = [
     path('create_office_staff_profile/', views.create_office_staff_profile, name='create_office_staff_profile'),
     path('edit_office_staff/', views.edit_office_staff, name='edit_office_staff'),
     path('consumer/<int:consumer_id>/', views.consumer_profile, name='consumer_profile'),
+    path('regenerate_bill/<int:meter_reading_id>/', views.regenerate_bill, name='regenerate_bill'),
 ]

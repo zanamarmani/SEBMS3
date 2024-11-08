@@ -3,53 +3,66 @@ import os
 from uuid import uuid4
 import firebase_admin
 from firebase_admin import credentials, firestore
-import requests
 from django.core.files.base import ContentFile
+import time
+import logging
 
 from SEBMS import settings
-# Initialize Firebase (ensure you have the credentials file)
-cred = credentials.Certificate('firebase_credentials/serviceAccountKey.json')
-firebase_admin.initialize_app(cred)
+
+import requests
+
+# Initialize Firebase 
+if not firebase_admin._apps:
+    cred = credentials.Certificate('firebase_credentials/serviceAccountKey.json')
+    firebase_admin.initialize_app(cred)
 
 # Firestore database reference
 db = firestore.client()
 
 def fetch_meter_list():
-    try:
-        # Reference to the document in the 'meters' collection
-        doc_ref = db.collection('meters').document('your_doc_id')
-        doc = doc_ref.get()
-        # Check if the document exists
-        if doc.exists:
-            data = doc.to_dict()
-            # Assuming 'meter_list' is an array in the document
-            meter_list = data.get('meter_list', [])
-            # Extracting required fields from the meter list
-            processed_meter_list = []
-            for meter in meter_list:
-                processed_meter_list.append({
-                    'date': meter.get('date', ''),
-                    'id': meter.get('id', ''),
-                    'isActive': meter.get('isActive',''),
-                    'meterImage': meter.get('meterImage',''),
-                    'reading': meter.get('reading', ''),
-                    'serial_no': meter.get('serial_no', ''),
-                    
-                })
-            return processed_meter_list
-        else:
-            print("Document does not exist")
-            return []
-    except Exception as e:
-        print(f"Error fetching meter list: {e}")
-        return []
+    max_retries = 3
+    retry_delay = 5  # seconds
+
+    for attempt in range(max_retries):
+        try:
+            # Reference to the document in the 'meters' collection
+            doc_ref = db.collection('meters').document('your_doc_id')
+            doc = doc_ref.get()
+
+            # Check if the document exists
+            if doc.exists:
+                data = doc.to_dict()
+                # Assuming 'meter_list' is an array in the document
+                meter_list = data.get('meter_list', [])
+                # Extracting required fields from the meter list
+                processed_meter_list = [
+                    {
+                        'date': meter.get('date', ''),
+                        'id': meter.get('id', ''),
+                        'isActive': meter.get('isActive', ''),
+                        'meterImage': meter.get('meterImage', ''),
+                        'reading': meter.get('reading', ''),
+                        'serial_no': meter.get('serial_no', ''),
+                    }
+                    for meter in meter_list
+                ]
+                return processed_meter_list
+            else:
+                logging.warning("Document does not exist")
+                return []
+
+        except Exception as e:
+            logging.error(f"Error fetching meter list (Attempt {attempt + 1}): {e}")
+            # If it's the last attempt, raise the error
+            if attempt == max_retries - 1:
+                return []
+            time.sleep(retry_delay)  # Wait before retrying
+
+    return []
 
 
-import os
-import requests
-from django.core.files.base import ContentFile
-from uuid import uuid4
-from django.conf import settings
+
+
 
 def download_and_save_image(image_url):
     """

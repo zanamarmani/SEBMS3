@@ -1,0 +1,8 @@
+<!-- billing/regeneration_error.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>Regeneration Error</h2>
+    <p>{{ message }}</p>
+    <a href="{% url 'officestaff:all_bills' %}">Back to Bills</a>
+{% endblock %}

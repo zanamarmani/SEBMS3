@@ -23,8 +23,8 @@
                     <td>{{ bill.billmonth|date:"F Y" }}</td>
                     <td>{{ bill.duedate|date:"d-m-Y" }}</td>
                     <td>{{ bill.unitsconsumed }}</td>
-                    <td>${{ bill.payableamount }}</td>
-                    <td>${{ bill.gross_total }}</td>
+                    <td>{{ bill.payableamount }}</td>
+                    <td>{{ bill.gross_total }}</td>
                     <td>
                         {% if bill.paid %}
                             <span class="text-success">Paid</span>

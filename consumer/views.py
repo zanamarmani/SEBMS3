@@ -19,7 +19,8 @@ from datetime import timedelta
 def dashboard(request):
     consumer = get_object_or_404(Consumer, user=request.user)
     bill = Bill.objects.filter(meter__consumer=consumer).first()
-    return render(request, 'consumer/profile_consumer.html', {'bill': bill,'consumer':consumer})
+    meter = Meter.objects.filter(consumer=consumer).first()
+    return render(request, 'consumer/profile_consumer.html', {'bill': bill,'consumer':consumer,'meter':meter})
 # 1. Payment History
 @consumer_required
 def payment_history(request):
@@ -80,7 +81,6 @@ def pay_bill_demo(request):
         # Filter for unpaid bills within the current month
         bill = Bill.objects.filter(
         meter__consumer=consumer,
-        billmonth__range=(start_of_month, end_of_month),
         paid=False
             ).latest('billmonth')
     except Bill.DoesNotExist:
@@ -101,7 +101,7 @@ def pay_bill_demo(request):
 
     #txn_ref_no = f"T{datetime.now().strftime('%Y%m%d%H%M%S')}{str(uuid.uuid4().hex)[:6]}"
     if settings.DEBUG:
-        pp_amount = math.floor(bill.payableamount / 100) * 100  # Rounds down to the nearest hundred
+        pp_amount = math.floor(bill.payableamount / 100) * 100 # Rounds down to the nearest hundred
     else:
         pp_amount = bill.payableamount * 100  # Minor units for production
     pp_currency = 'PKR'  # Currency
@@ -113,7 +113,7 @@ def pay_bill_demo(request):
     
     # Pass these values to the template
     context = {
-        'pp_amount': pp_amount,
+        'pp_amount': pp_amount*100,
         'pp_currency': pp_currency,
         'txn_date_time': pp_txn_date_time,
         'txn_expiry_date_time': pp_txn_expiry_date_time,

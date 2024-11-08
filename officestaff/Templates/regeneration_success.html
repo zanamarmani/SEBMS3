@@ -1,0 +1,15 @@
+<!-- billing/regeneration_success.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>Bill Regenerated Successfully</h2>
+    <p>Bill ID: {{ bill.id }}</p>
+    <p>Bill Month: {{ bill.billmonth }}</p>
+    <p>Units Consumed: {{ bill.unitsconsumed }}</p>
+    <p>Payable Amount: {{ bill.payableamount }}</p>
+    <p>Payable After Due Date: {{ bill.payable_after_due_date }}</p>
+    <p>Gross Total: {{ bill.gross_total }}</p>
+    <p>Due Date: {{ bill.duedate }}</p>
+    <p>Status: Unpaid</p>
+    <a href="{% url 'officestaff:all_bills' %}">Back to Bills</a>
+{% endblock %}

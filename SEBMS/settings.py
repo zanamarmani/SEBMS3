@@ -28,6 +28,7 @@ DEBUG = True
 
 
 ALLOWED_HOSTS = ['redbird-natural-albacore.ngrok-free.app', 'localhost', '127.0.0.1']
+CSRF_TRUSTED_ORIGINS = ['https://redbird-natural-albacore.ngrok-free.app']
 
 
 

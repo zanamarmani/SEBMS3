@@ -25,7 +25,9 @@ from django.core.files import File
 import requests
 from io import BytesIO
 
+from django.db import transaction
 
+from django.utils.dateparse import parse_date
 
 @officestaff_required
 def Home(request):
@@ -99,7 +101,20 @@ def list_consumers(request):
 
 @officestaff_required
 def all_readings(request):
+    month = request.GET.get('month')
+    meter_number = request.GET.get('meter_number')
+    
     readings = MeterReading.objects.all()
+
+    # Filter by month (if provided)
+    if month:
+        # Convert the month string to a date object to filter by the month
+        month_date = parse_date(month + "-01")
+        readings = readings.filter(reading_date__year=month_date.year, reading_date__month=month_date.month)
+
+    # Filter by meter number (if provided)
+    if meter_number:
+        readings = readings.filter(meter__meter_number=meter_number)
     title ="All Readings"
     return render(request, 'all_readings.html', {'readings': readings,'title':title})
 
@@ -193,6 +208,18 @@ def save_meter_data_to_db(request):
 def all_bills(request):
     # Fetch all bills from the database
     bills = Bill.objects.all()
+    # Get filter values from the request
+    consumer_number = request.GET.get('consumer_number')
+    meter_number = request.GET.get('meter_number')
+    month = request.GET.get('month')
+
+    # Apply filters based on provided values
+    if consumer_number:
+        bills = bills.filter(meter__consumer__consumer_number=consumer_number)
+    if meter_number:
+        bills = bills.filter(meter__meter_number=meter_number)
+    if month:
+        bills = bills.filter(billmonth__month=month.split("-")[1], billmonth__year=month.split("-")[0])
     title="All Bills"
     return render(request, 'all_bills.html', {'bills': bills, 'title':title})
 @officestaff_required
@@ -270,6 +297,7 @@ def Generate_bill(request):
             payable_after_due_date=payable_after_due_date,  
             meter=meter,
             arrears=total_arrears,  # Track the arrears on the bill
+            gross_total = gross_total,
             paid=False
         )
 
@@ -287,6 +315,7 @@ def Generate_bill(request):
             'units_consumed': units_consumed,
             'payable_amount': gross_total,  # Total due before late fee
             'payable_after_due_date': payable_after_due_date,
+            'gross_total': gross_total,
             'arrears': total_arrears,
             'bill_id': bill.id,
             'current_bill':current_bill,
@@ -301,6 +330,56 @@ def Generate_bill(request):
         'bill_details': bill_details  # Optional: Display bill details if needed
     })
 
+@transaction.atomic
+def regenerate_bill(request, meter_reading_id):
+    # Retrieve the processed meter reading
+    meter_reading = get_object_or_404(MeterReading, id=meter_reading_id, processed=True)
+
+    # Retrieve the existing unpaid bill linked to this reading or meter
+    existing_bill = Bill.objects.filter(meter=meter_reading.meter, billmonth=meter_reading.reading_date, paid=False).first()
+
+    if existing_bill:
+        # Delete the old unpaid bill and reuse its ID
+        bill_id = existing_bill.id
+        existing_bill.delete()
+
+        # Calculate units consumed
+        units_consumed = meter_reading.new_reading - meter_reading.last_reading
+
+        # Fetch the tariff associated with the consumer's meter
+        tariff = meter_reading.meter.consumer.consumer_tariff
+
+        # Calculate payable amount based on tariff tiers
+        current_bill = calculate_amount_due(units_consumed, tariff)
+
+        # Calculate gross total and late fee if applicable
+        gross_total = current_bill + existing_bill.arrears
+        payable_after_due_date = gross_total * Decimal('1.05')  # Example late fee
+
+        # Create a new bill with the same ID
+        new_bill = Bill.objects.create(
+            id=bill_id,
+            billmonth=meter_reading.reading_date,
+            duedate=existing_bill.duedate,  
+            detectionunit=existing_bill.detectionunit,
+            averageunit=existing_bill.averageunit,
+            units=existing_bill.units,
+            unitsconsumed=units_consumed,
+            payableamount=gross_total,
+            payable_after_due_date=payable_after_due_date,
+            meter=meter_reading.meter,
+            arrears=existing_bill.arrears,
+            gross_total=gross_total,
+            current_bill=current_bill,
+            paid=False
+        )
+
+        # Render success template with bill details
+        return render(request, 'regeneration_success.html', {'bill': new_bill})
+
+    else:
+        # Render error template if no unpaid bill found
+        return render(request, 'regeneration_error.html', {'message': "No unpaid bill to regenerate."})
 
 @officestaff_required
 def show_profile(request): 
@@ -405,7 +484,7 @@ def assign_meter_view(request):
             meter = form.save(commit=False)
             meter.consumer = consumer
             meter.save()
-            return redirect('success_page')
+            return redirect('officestaff:dashboard')
 
     else:
         form = MeterAssignmentForm()
@@ -418,5 +497,6 @@ def consumer_profile(request, consumer_id):
     # Get the consumer profile based on the ID passed in the URL
     consumer = get_object_or_404(Consumer, id=consumer_id)
     bill = Bill.objects.filter(meter__consumer_id=consumer_id).first()
+    meter = Meter.objects.filter(consumer=consumer).first()
     
-    return render(request, 'consumer_profile.html', {'bill': bill,'consumer': consumer})
+    return render(request, 'consumer_profile.html', {'bill': bill,'consumer': consumer, 'meter':meter})

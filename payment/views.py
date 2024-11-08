@@ -67,47 +67,53 @@ from django.views.decorators.csrf import csrf_exempt
 
 @csrf_exempt
 def payment_success(request):
-    # You can process the data sent back from JazzCash, if any
-    # Example: You might want to log the payment or update the database
-
-    # Assuming you get some POST data with the payment status, ref number, etc.
     if request.method == 'POST':
         txn_ref = request.POST.get('pp_TxnRefNo')
-        amount = request.POST.get('pp_Amount')
-        payment_status = request.POST.get('pp_ResponseCode')  # Example: JazzCash may send this to indicate success or failure
-        pp_BillReference = request.POST.get('pp_BillReference')  # Example: The ID of the bill in your database
-
+        amount_str = request.POST.get('pp_Amount')
+        payment_status = request.POST.get('pp_ResponseCode')
+        pp_BillReference = request.POST.get('pp_BillReference')
         
-        if payment_status == '199':  # Example: Assuming '000' means success
-            # Update the payment status in your database
-            bill = Bill.objects.get(id=pp_BillReference)
-            payment = Payment.objects.create(
-                bill=bill,
-                bank_charges=0.00,  # Example bank charge
-                arrears_charges=0.00,  # Assuming you have arrears field in the Bill model
-                total_amount_paid=Decimal(amount), # Convert amount to a float, then divide,  # Convert to regular units
-                txn_id= txn_ref
+        # Check if all required fields are available
+        if not (txn_ref and amount_str and payment_status and pp_BillReference):
+            return HttpResponse("Incomplete payment data received.")
+
+        if payment_status == '199':  # Assuming '199' means success
+            try:
+                # Retrieve the bill instance
+                bill = Bill.objects.get(id=pp_BillReference)
+                
+                # Convert amount from string and divide if in cents
+                amount = Decimal(amount_str) / 100
+                
+                # Create a new payment record
+                payment = Payment.objects.create(
+                    bill=bill,
+                    bank_charges=0.00,
+                    arrears_charges=0.00,
+                    total_amount_paid=amount,
+                    txn_id=txn_ref
                 )
-            bill.payableamount -= payment.total_amount_paid
-            bill.paid = True
-            bill.save()
-            # You can also retrieve the related bill and mark it as paid
-            return render(request, 'payment/payment_success.html', {
-                'txn_ref': txn_ref,
-                'amount': amount,
-                'message': 'Payment successful!',
-            })
+
+                # Update the bill's payable amount and status
+                bill.payableamount = max(bill.payableamount - amount, 0)
+                bill.paid = (bill.payableamount == 0)
+                bill.save()
+
+                return render(request, 'payment/payment_success.html', {
+                    'txn_ref': txn_ref,
+                    'amount': amount,
+                    'message': 'Payment successful!',
+                })
+            except Bill.DoesNotExist:
+                return HttpResponse("Bill not found.")
         else:
-            # Handle unsuccessful payment
             return render(request, 'payment/payment_failed.html', {
                 'txn_ref': txn_ref,
                 'message': 'Payment failed. Please try again.',
                 'status': payment_status,
             })
-    
-    # If the method isn't POST, return a default message
-    return HttpResponse("This is the payment success page. Please use POST for payments.")
 
+    return HttpResponse("This is the payment success page. Please use POST for payments.")
 
 def payment_failed(request):
     # Show an error page
