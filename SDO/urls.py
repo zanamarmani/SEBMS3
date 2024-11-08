@@ -5,7 +5,7 @@ from .utills import line_chart, bill_progress_view
 from users.views import UserUpdateView, UserDeleteView, update_password,success_page
 
 from django.contrib.auth import views as auth_views
-
+from . import utills
 app_name = 'SDO'
 urlpatterns = [
     path('', views.dashboard, name='dashboard' ),
@@ -32,6 +32,6 @@ urlpatterns = [
     path('sdo/profile/', views.sdo_profile_view, name='sdo_profile'),
     path('sdo/profile/edit/', views.edit_sdo_profile_view, name='edit_sdo_profile'),
     path('sdo/profile/create/', views.create_sdo_profile_view, name='create_sdo_profile'),
-   
+    path('sdo_dashboard/payment_data/', utills.payment_data, name='payment_data'),
 ]
 

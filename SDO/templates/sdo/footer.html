@@ -156,6 +156,74 @@ window.addEventListener('load', function() {
         return confirm("Are you sure you want to delete this consumer?");
     }
 </script>
+<script src="{% static 'js/chart.min.js' %}"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Fetch payment data from the server
+        fetch("{% url 'SDO:payment_data' %}")
+        .then(response => response.json())
+        .then(data => {
+            // Monthly Payments Chart
+            const monthlyCtx = document.getElementById('monthlyPaymentsChart').getContext('2d');
+            new Chart(monthlyCtx, {
+                type: 'bar',
+                data: {
+                    labels: data.months,
+                    datasets: [{
+                        label: 'Monthly Payments',
+                        data: data.monthly_payments,
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        }
+                    }
+                }
+            });
+    
+            // Yearly Payments Chart
+            const yearlyCtx = document.getElementById('yearlyPaymentsChart').getContext('2d');
+            new Chart(yearlyCtx, {
+                type: 'bar',
+                data: {
+                    labels: data.yearly_payments.map(item => item.year),
+                    datasets: [{
+                        label: 'Yearly Payments',
+                        data: data.yearly_payments.map(item => item.total),
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        }
+                    }
+                }
+            });
+        });
+    });
+    </script>
+    
 </body>
 
 </html>

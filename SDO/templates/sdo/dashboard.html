@@ -109,7 +109,12 @@
                                     </div>
                                 </div>
                                 <div class="chart-container">
-                                    <canvas id="canvas-barchart" width="800" height="400"></canvas> <!-- Adjust width and height -->
+                                    <div class="dashboard-statistics">
+                                        <h4 class="app-card-title">Monthly Payments</h4>
+                                        <canvas id="monthlyPaymentsChart" width="400" height="200"></canvas>
+                                        <h4 class="app-card-title">Yearly Payments</h4>
+                                        <canvas id="yearlyPaymentsChart" width="400" height="200"></canvas>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -122,75 +127,63 @@
                     <h1 class="app-page-title p-md-3 p-lg-4" style="font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 1.5rem; margin-top: 0; margin-bottom:0 ;" >Tariffs</h1>
                 </div>
                 <div class="row g-4 mb-4">
-                    <!-- Commercial Card -->
-                    <div class="col-12 col-lg-4">
-                        <div class="app-card app-card-basic d-flex flex-column align-items-start shadow-sm card-effect" style="border-radius: 10px; overflow: hidden; background-color: #ffffff; transition: transform 0.5s; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
-                            <div class="app-card-header p-3" style="background-color: #dbf3e9; width: 100%; font-family: 'Poppins', sans-serif; border-bottom: 1px solid #448e49;">
-                                <h3 style="font-size: 1.2rem; font-weight: bold; color: #302f2f;">Commercial <i class="bi bi-briefcase" style="font-size: 1.2rem; float: right;"></i></h3>
-                            </div>
-                            <div class="app-card-body p-3" style="color: #555; text-align: left;">
-                                <div class="tariff-info" style="border-bottom: 1px solid #eee; padding-bottom: 8px;">
-                                    <p style="margin-bottom: 6px;">Price for 100 units:</p>
-                                    <span style="font-weight: bold; color: #5bb582;">3 rupees</span>
+                    {% for tariff in tariffs %}
+                        <div class="col-12 col-lg-4">
+                            <div class="app-card app-card-basic d-flex flex-column align-items-start shadow-sm card-effect" 
+                                style="border-radius: 10px; overflow: hidden; background-color: #ffffff; transition: transform 0.5s; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+                                
+                                <!-- Tariff Type Header -->
+                                <div class="app-card-header p-3" style="background-color: #dbf3e9; width: 100%; font-family: 'Poppins', sans-serif; border-bottom: 1px solid #448e49;">
+                                    <h3 style="font-size: 1.2rem; font-weight: bold; color: #302f2f;">
+                                        {% if tariff.tariff_type == 'domestic' %}
+                                            Domestic <i class="bi bi-house-door" style="font-size: 1.2rem; float: right;"></i>
+                                        {% elif tariff.tariff_type == 'commercial' %}
+                                            Commercial <i class="bi bi-briefcase" style="font-size: 1.2rem; float: right;"></i>
+                                        {% elif tariff.tariff_type == 'industrial' %}
+                                            Industrial <i class="bi bi-building" style="font-size: 1.2rem; float: right;"></i>
+                                        {% endif %}
+                                    </h3>
                                 </div>
-                                <div class="tariff-info" style="border-bottom: 1px solid #eee; padding-bottom: 8px; padding-top: 8px;">
-                                    <p style="margin-bottom: 6px;">Price for 100-200 units:</p>
-                                    <span style="font-weight: bold; color: #5bb582;">4 rupees</span>
-                                </div>
-                                <div class="tariff-info" style="padding-top: 8px;">
-                                    <p style="margin-bottom: 6px;">Price for above 200 units:</p>
-                                    <span style="font-weight: bold; color: #5bb582;">5 rupees</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Domestic Card -->
-                    <div class="col-12 col-lg-4">
-                        <div class="app-card app-card-basic d-flex flex-column align-items-start shadow-sm card-effect" style="border-radius: 10px; overflow: hidden; background-color: #ffffff; transition: transform 0.5s; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
-                            <div class="app-card-header p-3" style="background-color: #dbf3e9; width: 100%; font-family: 'Poppins', sans-serif; border-bottom: 1px solid #448e49;">
-                                <h3 style="font-size: 1.2rem; font-weight: bold; color: #302f2f;">Domestic <i class="bi bi-house-door" style="font-size: 1.2rem; float: right;"></i></h3>
-                            </div>
-                            <div class="app-card-body p-4" style="color: #555; text-align: left;">
-                                <div class="tariff-info" style="border-bottom: 1px solid #eee; padding-bottom: 8px;">
-                                    <p style="margin-bottom: 6px;">Price for 100 units:</p>
-                                    <span style="font-weight: bold; color: #5bb582;">3 rupees</span>
-                                </div>
-                                <div class="tariff-info" style="border-bottom: 1px solid #eee; padding-bottom: 8px; padding-top: 8px;">
-                                    <p style="margin-bottom: 6px;">Price for 100-200 units:</p>
-                                    <span style="font-weight: bold; color: #5bb582;">4 rupees</span>
-                                </div>
-                                <div class="tariff-info" style="padding-top: 8px;">
-                                    <p style="margin-bottom: 6px;">Price for above 200 units:</p>
-                                    <span style="font-weight: bold; color: #5bb582;">5 rupees</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Industrial Card -->
-                    <div class="col-12 col-lg-4">
-                        <div class="app-card app-card-basic d-flex flex-column align-items-start shadow-sm card-effect" style="border-radius: 10px; overflow: hidden; background-color: #ffffff; transition: transform 0.5s; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
-                            <div class="app-card-header p-3" style="background-color: #dbf3e9; width: 100%; font-family: 'Poppins', sans-serif; border-bottom: 1px solid #448e49;">
-                                <h3 style="font-size: 1.2rem; font-weight: bold; color: #302f2f;">Industrial <i class="bi bi-building" style="font-size: 1.2rem; float: right;"></i></h3>
-                            </div>
-                            <div class="app-card-body p-4" style="color: #555; text-align: left;">
-                                <div class="tariff-info" style="border-bottom: 1px solid #eee; padding-bottom: 8px;">
-                                    <p style="margin-bottom: 6px;">Load less than 25 kw:</p>
-                                    <span style="font-weight: bold; color: #5bb582;">10 rupees</span>
-                                </div>
-                                <div class="tariff-info" style="border-bottom: 1px solid #eee; padding-bottom: 8px; padding-top: 8px;">
-                                    <p style="margin-bottom: 6px;">Load upto 25 to 500 kw:</p>
-                                    <span style="font-weight: bold; color: #5bb582;">14 rupees</span>
-                                </div>
-                                <div class="tariff-info" style="padding-top: 8px;">
-                                    <p style="margin-bottom: 6px;">Load above 500 kw:</p>
-                                    <span style="font-weight: bold; color: #5bb582;">14 rupees</span>
+                
+                                <!-- Tariff Rates Body -->
+                                <div class="app-card-body p-3" style="color: #555; text-align: left;">
+                                    {% if tariff.tariff_type == 'industrial' %}
+                                        <div class="tariff-info" style="border-bottom: 1px solid #eee; padding-bottom: 8px;">
+                                            <p style="margin-bottom: 6px;">Load less than 25 kW:</p>
+                                            <span style="font-weight: bold; color: #5bb582;">{{ tariff.price_100 }} rupees</span>
+                                        </div>
+                                        <div class="tariff-info" style="border-bottom: 1px solid #eee; padding-bottom: 8px; padding-top: 8px;">
+                                            <p style="margin-bottom: 6px;">Load 25 to 500 kW:</p>
+                                            <span style="font-weight: bold; color: #5bb582;">{{ tariff.price_200 }} rupees</span>
+                                        </div>
+                                        <div class="tariff-info" style="padding-top: 8px;">
+                                            <p style="margin-bottom: 6px;">Load above 500 kW:</p>
+                                            <span style="font-weight: bold; color: #5bb582;">{{ tariff.price_300 }} rupees</span>
+                                        </div>
+                                    {% else %}
+                                        <div class="tariff-info" style="border-bottom: 1px solid #eee; padding-bottom: 8px;">
+                                            <p style="margin-bottom: 6px;">Price for 100 units:</p>
+                                            <span style="font-weight: bold; color: #5bb582;">{{ tariff.price_100 }} rupees</span>
+                                        </div>
+                                        <div class="tariff-info" style="border-bottom: 1px solid #eee; padding-bottom: 8px; padding-top: 8px;">
+                                            <p style="margin-bottom: 6px;">Price for 100-200 units:</p>
+                                            <span style="font-weight: bold; color: #5bb582;">{{ tariff.price_200 }} rupees</span>
+                                        </div>
+                                        <div class="tariff-info" style="border-bottom: 1px solid #eee; padding-bottom: 8px; padding-top: 8px;">
+                                            <p style="margin-bottom: 6px;">Price for 200-300 units:</p>
+                                            <span style="font-weight: bold; color: #5bb582;">{{ tariff.price_300 }} rupees</span>
+                                        </div>
+                                        <div class="tariff-info" style="padding-top: 8px;">
+                                            <p style="margin-bottom: 6px;">Price for units above 300:</p>
+                                            <span style="font-weight: bold; color: #5bb582;">{{ tariff.price_above }} rupees</span>
+                                        </div>
+                                    {% endif %}
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    {% endfor %}
                 </div>
+                
                 
 
 

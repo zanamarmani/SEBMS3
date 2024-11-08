@@ -58,8 +58,9 @@ def dashboard(request):
         payment_date__year=current_year,
         payment_date__month=current_month
     ).aggregate(total=Sum('total_amount_paid'))['total'] or 0  # Set to 0 if no payments
+    tariffs = Tariff.objects.all()
 
-    return render(request, 'sdo/dashboard.html', {'users': users,'tariff': tariff,'consumers':consumers,'total_office_staff':office_staffs,'total_users':users,'total_meter_reader':meter_readers,'current_month_total': current_month_total,})
+    return render(request, 'sdo/dashboard.html', {'users': users,'tariff': tariff,'consumers':consumers,'total_office_staff':office_staffs,'total_users':users,'total_meter_reader':meter_readers,'current_month_total': current_month_total,'tariffs': tariffs})
 
 
 

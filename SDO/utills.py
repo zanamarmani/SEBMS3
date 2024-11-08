@@ -5,6 +5,8 @@ from django.http import JsonResponse
 from django.utils.dateformat import DateFormat
 from collections import defaultdict
 import calendar
+from django.utils import timezone
+from payment.models import Payment
 def calculate_bill(consumed_units, tariff):
     # Check if a valid tariff exists
     if not tariff:
@@ -90,3 +92,36 @@ def bill_progress_view(request):
         'paid_bills': paid_bills,
         'unpaid_bills': unpaid_bills,
     })
+
+
+def payment_data(request):
+    # Current year for filtering
+    current_year = timezone.now().year
+    
+    # Monthly payments for the current year
+    monthly_payments = []
+    for month in range(1, 13):
+        month_total = Payment.objects.filter(
+            payment_date__year=current_year,
+            payment_date__month=month
+        ).aggregate(total=Sum('total_amount_paid'))['total'] or 0
+        monthly_payments.append(month_total)
+    
+    # Yearly payments over the past 5 years
+    yearly_payments = []
+    for year in range(current_year - 4, current_year + 1):
+        year_total = Payment.objects.filter(
+            payment_date__year=year
+        ).aggregate(total=Sum('total_amount_paid'))['total'] or 0
+        yearly_payments.append({
+            'year': year,
+            'total': year_total
+        })
+    
+    # Prepare data for JSON response
+    data = {
+        'monthly_payments': monthly_payments,
+        'yearly_payments': yearly_payments,
+        'months': [calendar.month_name[month] for month in range(1, 13)]
+    }
+    return JsonResponse(data)
