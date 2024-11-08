@@ -1,5 +1,10 @@
 # utils.py (or wherever your utility functions are)
 from django.shortcuts import render
+from django.db.models import Sum
+from django.http import JsonResponse
+from django.utils.dateformat import DateFormat
+from collections import defaultdict
+import calendar
 def calculate_bill(consumed_units, tariff):
     # Check if a valid tariff exists
     if not tariff:
@@ -42,10 +47,29 @@ def bills_data(request):
 
     return JsonResponse(data)
 
+
 def line_chart(request):
-    labels = ['december','junuary','february','march','april','may','june','july','august','september','october','november']
-    total_bills = [4000,3500,405,1008,1500,2300,4500,6907,2778,2943,910,454]
-    paid_bills =  [3500,2000,400,1095,1400,2300,3050,6812,1278,2323,190,400]
+    # Initialize dictionaries to store monthly totals
+    total_bills_dict = defaultdict(float)
+    paid_bills_dict = defaultdict(float)
+    
+    # Query all bills and group by month
+    bills = Bill.objects.all()
+    
+    for bill in bills:
+        month_name = DateFormat(bill.billmonth).format('F')  # Convert to month name
+        
+        # Convert Decimal to float and sum up total bill amounts by month
+        total_bills_dict[month_name] += float(bill.payableamount) if bill.payableamount else 0
+        
+        # Convert Decimal to float and sum up only paid bill amounts by month
+        if bill.paid:
+            paid_bills_dict[month_name] += float(bill.payableamount) if bill.payableamount else 0
+    
+    # Ensure all months are included, even with zero values
+    labels = [calendar.month_name[i] for i in range(1, 13)]
+    total_bills = [total_bills_dict[month] for month in labels]
+    paid_bills = [paid_bills_dict[month] for month in labels]
 
     return JsonResponse({
         'labels': labels,

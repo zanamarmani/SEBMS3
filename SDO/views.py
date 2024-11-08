@@ -21,8 +21,11 @@ from django.contrib.auth.decorators import login_required
 from .models import sdo_profile
 from .forms import SDOProfileForm,SDOProfileCreateForm
 
-from django.contrib.auth import login
 from .forms import CustomUserCreationForm
+from django.shortcuts import render
+from django.db.models import Sum
+from django.utils import timezone
+from payment.models import Payment
 
 import logging
 
@@ -45,7 +48,18 @@ def dashboard(request):
     office_staffs = User.objects.filter(is_office_staff=True).count()
     meter_readers = User.objects.filter(is_meter_reader=True).count()
 
-    return render(request, 'sdo/dashboard.html', {'users': users,'tariff': tariff,'consumers':consumers,'total_office_staff':office_staffs,'total_users':users,'total_meter_reader':meter_readers})
+    # Get the current date and extract the current month and year
+    current_date = timezone.now()
+    current_month = current_date.month
+    current_year = current_date.year
+    
+    # Filter payments for the current month and year and calculate the sum of total_amount_paid
+    current_month_total = Payment.objects.filter(
+        payment_date__year=current_year,
+        payment_date__month=current_month
+    ).aggregate(total=Sum('total_amount_paid'))['total'] or 0  # Set to 0 if no payments
+
+    return render(request, 'sdo/dashboard.html', {'users': users,'tariff': tariff,'consumers':consumers,'total_office_staff':office_staffs,'total_users':users,'total_meter_reader':meter_readers,'current_month_total': current_month_total,})
 
 
 
