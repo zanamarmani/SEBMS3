@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ title }}</title>
+    <style>
+        /* Your existing styles here */
+    </style>
+</head>
+<body>
+    <h1>{{ title }}</h1>
+
+    <!-- Filter Form (for user convenience before download) -->
+    <form method="get" action="">
+        <label for="month">Month:</label>
+        <input type="month" name="month" id="month" value="{{ request.GET.month }}">
+        <button type="submit">Filter</button>
+    </form>
+
+    <!-- Table for Bills -->
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Bill ID</th>
+                <th>Consumer No</th>
+                <th>Meter Number</th>
+                <th>Amount</th>
+                <th>Bill Month</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for bill in bills %}
+                <tr>
+                    <td>{{ bill.id }}</td>
+                    <td>{{ bill.meter.consumer.consumer_number }}</td>
+                    <td>{{ bill.meter.meter_number }}</td>
+                    <td>{{ bill.payableamount }}</td>
+                    <td>{{ bill.billmonth }}</td>
+                    <td>{{ bill.paid|yesno:"Paid,Unpaid" }}</td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="6">No bills found for the selected month.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

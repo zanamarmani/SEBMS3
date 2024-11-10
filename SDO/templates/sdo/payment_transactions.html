@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monthly Transactions</title>
+    <style>
+        /* General Styling */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1 {
+            color: #4CAF50;
+            text-align: center;
+        }
+
+        /* Table Styling */
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+        .table th, .table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        .table th {
+            background-color: #f2f2f2;
+        }
+
+        /* Print Styling */
+        @media print {
+            .btn-print, .filter-form {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Monthly Transactions</h1>
+
+    <!-- Filter Form -->
+    <form method="GET" class="filter-form" style="margin-bottom: 20px; text-align: center;">
+        <label for="month">Filter by Month:</label>
+        <input type="month" name="month" id="month" value="{{ month }}">
+        <button type="submit">Filter</button>
+    </form>
+
+    <!-- Transactions Table -->
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Payment ID</th>
+                    <th>Bill ID</th>
+                    <th>Bank Charges</th>
+                    <th>Arrears Charges</th>
+                    <th>Total Amount Paid</th>
+                    <th>Payment Date</th>
+                    <th>Transaction ID</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for payment in payments %}
+                    <tr>
+                        <td>{{ payment.id }}</td>
+                        <td>{{ payment.bill.id }}</td>
+                        <td>{{ payment.bank_charges }}</td>
+                        <td>{{ payment.arrears_charges }}</td>
+                        <td>{{ payment.total_amount_paid }}</td>
+                        <td>{{ payment.payment_date }}</td>
+                        <td>{{ payment.txn_id }}</td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="7">No transactions found for this month.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Print Button -->
+    <div style="text-align: center; margin-top: 20px;">
+        <a href="{% url 'SDO:print_transactions' %}?month={{ month }}" target="_blank" class="btn-print">Print</a>
+        <a href="{% url 'SDO:transactions_pdf' %}?month={{ month }}" class="btn btn-secondary">Download Transactions PDF</a>
+    </div>
+</body>
+</html>

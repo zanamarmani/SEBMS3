@@ -37,7 +37,9 @@
                         <button type="submit" class="btn btn-primary">Filter</button>
                     </div>
                 </form>
-
+                <div class="col-auto">
+                    <a id="download-link" href="{% url 'SDO:consumers_pdf' division=request.GET.consumer_division|default:'all' %}" class="btn btn-secondary">Download Consumers PDF</a>
+                </div>
                 <div class="tab-content" id="orders-table-tab-content">
                     <div class="tab-pane fade show active" id="orders-all" role="tabpanel" aria-labelledby="orders-all-tab">
                         <div class="app-card app-card-orders-table shadow-sm mb-5">
@@ -82,34 +84,9 @@
                                                         </a>
                                                     </td>
                                                 </tr>
+                                                
                                             {% endfor %}
-                                            {% for consumer in consumers %}
-                                                <tr class="table-row text-center">
-                                                    <td>{{ consumer.id }}</td>
-                                                    <td>{{ consumer.consumer_name }}</td>
-                                                    <td>{{ consumer.consumer_number }}</td>
-                                                    <td>{{ consumer.consumer_division }}</td>
-                                                    <td>{{ consumer.consumer_tariff }}</td>
-                                                    <td>
-                                                        {% if consumer.approved %}
-                                                            Approved
-                                                        {% else %}
-                                                            Pending
-                                                        {% endif %}
-                                                    </td>
-                                                    <td>
-                                                        <a href="{% url 'SDO:consumer_profile' consumer.pk %}">
-                                                            <button class="btn-view-details" type="button">View Details</button>
-                                                        </a>
-                                                        <a href="{% url 'SDO:delete_consumer' consumer.pk %}" 
-                                                           class="btn-delete" 
-                                                           onclick="return confirmDelete();">
-                                                            Delete
-                                                        </a>
-                                                    </td>
-                                                </tr>
-                                            {% endfor %}
-                                        </tbody>
+                                                                                    </tbody>
                                     </table>
                                 </div><!--//table-responsive-->
                             </div><!--//app-card-body-->

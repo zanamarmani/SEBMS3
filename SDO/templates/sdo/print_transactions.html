@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
+        th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+    <h2>Transactions Report</h2>
+    <p>Month: {{ month }}</p>
+    <table>
+        <tr>
+            <th>Bill ID</th>
+            <th>Bank Charges</th>
+            <th>Arrears Charges</th>
+            <th>Total Amount Paid</th>
+            <th>Payment Date</th>
+            <th>Transaction ID</th>
+        </tr>
+        {% for payment in payments %}
+        <tr>
+            <td>{{ payment.bill.id }}</td>
+            <td>{{ payment.bank_charges }}</td>
+            <td>{{ payment.arrears_charges }}</td>
+            <td>{{ payment.total_amount_paid }}</td>
+            <td>{{ payment.payment_date }}</td>
+            <td>{{ payment.txn_id }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

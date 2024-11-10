@@ -75,7 +75,7 @@
 
     // Fetch line chart data from the line_chart_data view
     function fetchLineChartData() {
-        return fetch('{% url "SDO:line_chart_data" %}')
+        return fetch('{% url "SDO:line_chart" %}')
             .then(response => response.json())
             .catch(error => console.error('Error fetching line chart data:', error));
     }

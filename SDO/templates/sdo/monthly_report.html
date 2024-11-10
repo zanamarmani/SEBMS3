@@ -1,0 +1,70 @@
+<!-- monthly_report.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monthly Report</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            color: #333;
+            background-color: #f9f9f9;
+        }
+        h1 {
+            color: #4CAF50;
+            text-align: center;
+        }
+        .report-section {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #fff;
+        }
+        .report-section p {
+            font-size: 1.1em;
+            margin: 8px 0;
+        }
+        .btn-print {
+            display: block;
+            margin: 0 auto;
+            padding: 10px 20px;
+            font-size: 1em;
+            color: #fff;
+            background-color: #4CAF50;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+        }
+        .btn-print:hover {
+            background-color: #45a049;
+        }
+    </style>
+    <script>
+        function printReport() {
+            window.print();
+        }
+    </script>
+</head>
+<body>
+    <h1>Monthly Report for {{ monthly_report.month }}/{{ monthly_report.year }}</h1>
+
+    <div class="report-section">
+        <p><strong>Total Bills Generated:</strong> {{ monthly_report.total_bills_generated }}</p>
+        <p><strong>Total Units Consumed:</strong> {{ monthly_report.total_units_consumed }}</p>
+        <p><strong>Total Amount Payable:</strong> {{ monthly_report.total_amount_payable }}</p>
+        <p><strong>Total Amount Paid:</strong> {{ monthly_report.total_amount_paid }}</p>
+        <p><strong>Total Consumers:</strong> {{ monthly_report.total_consumers }}</p>
+        <p><strong>Total Office Staff:</strong> {{ monthly_report.total_office_staff }}</p>
+        <p><strong>Total Meter Readers:</strong> {{ monthly_report.total_meter_readers }}</p>
+        <!-- Add other fields as needed -->
+    </div>
+
+    <button class="btn-print" onclick="printReport()">Print Report</button>
+</body>
+</html>

@@ -1,3 +1,4 @@
+from django.http import HttpResponse
 from django.shortcuts import redirect, render,get_object_or_404
 
 # Create your views here.
@@ -10,7 +11,7 @@ from meterreader.models import Meter
 from users.models import User
 from django.contrib import messages
 
-from .models import Tariff
+from .models import MonthlyReport, Tariff
 from .forms import TariffForm
 
 from consumer.models import Consumer
@@ -26,6 +27,20 @@ from django.shortcuts import render
 from django.db.models import Sum
 from django.utils import timezone
 from payment.models import Payment
+
+from datetime import date
+from django.db.models import Sum
+
+from django.utils.timezone import now
+
+from datetime import datetime
+
+from django.shortcuts import render
+
+from .utills import render_to_pdf
+
+from django.template.loader import get_template
+from xhtml2pdf import pisa
 
 import logging
 
@@ -148,6 +163,37 @@ def show_all_consumers(request):
     }
     return render(request, 'sdo/show_all_consumers.html', context)
 
+@sdo_required
+def print_all_consumers(request):
+    consumers = Consumer.objects.all()
+
+    # Get filters from request
+    consumer_name = request.GET.get('consumer_name', '')
+    consumer_number = request.GET.get('consumer_number', '')
+    consumer_division = request.GET.get('consumer_division', '')
+    consumer_tariff = request.GET.get('consumer_tariff', '')
+
+    # Apply filters if present
+    if consumer_name:
+        consumers = consumers.filter(consumer_name__icontains=consumer_name)
+    if consumer_number:
+        consumers = consumers.filter(consumer_number__icontains=consumer_number)
+    if consumer_division:
+        consumers = consumers.filter(consumer_division=consumer_division)
+    if consumer_tariff:
+        consumers = consumers.filter(consumer_tariff__tariff_type=consumer_tariff)
+
+    title = "Consumer"
+    context = {
+        "consumers": consumers,
+        "title": title,
+        "consumer_name": consumer_name,
+        "consumer_number": consumer_number,
+        "consumer_division": consumer_division,
+        "consumer_tariff": consumer_tariff,
+    }
+    return render(request, 'sdo/print_consumers.html', context)
+
 
 @sdo_required
 def consumer_profile(request, consumer_id):
@@ -208,22 +254,53 @@ def tariff_list(request):
 def all_bills(request):
     # Fetch all bills from the database
     bills = Bill.objects.all()
+     # Get filter values from the request
+    consumer_number = request.GET.get('consumer_number')
+    meter_number = request.GET.get('meter_number')
+    month = request.GET.get('month')
+
+    # Apply filters based on provided values
+    if consumer_number:
+        bills = bills.filter(meter__consumer__consumer_number=consumer_number)
+    if meter_number:
+        bills = bills.filter(meter__meter_number=meter_number)
+    if month:
+        bills = bills.filter(billmonth__month=month.split("-")[1], billmonth__year=month.split("-")[0])
     title="All Bills"
-    return render(request, 'sdo/all_bills.html', {'bills': bills, 'title':title})
+    return render(request, 'sdo/all_bills.html', {'bills': bills, 'title':title,'month':month})
+
+@sdo_required
+def print_all_bills(request):
+    # Fetch all bills from the database
+    bills = Bill.objects.all()
+     # Get filter values from the request
+    consumer_number = request.GET.get('consumer_number')
+    meter_number = request.GET.get('meter_number')
+    month = request.GET.get('month')
+
+    # Apply filters based on provided values
+    if consumer_number:
+        bills = bills.filter(meter__consumer__consumer_number=consumer_number)
+    if meter_number:
+        bills = bills.filter(meter__meter_number=meter_number)
+    if month:
+        bills = bills.filter(billmonth__month=month.split("-")[1], billmonth__year=month.split("-")[0])
+    title="All Bills"
+    return render(request, 'sdo/print_all_bills.html', {'bills': bills, 'title':title})
 
 @sdo_required
 def paid_bills(request):
     # Fetch paid bills from the database
     bills = Bill.objects.filter(paid=True)
     title='Paid Bills'
-    return render(request, 'sdo/all_bills.html', {'bills': bills, 'title':title})
+    return render(request, 'sdo/all_bills.html', {'bills': bills, 'title':title,'paid':True})
 
 @sdo_required
 def unpaid_bills(request):
     # Fetch unpaid bills from the database
     bills = Bill.objects.filter(paid=False)
     title='Unpaid Bills'
-    return render(request, 'sdo/all_bills.html', {'bills': bills, 'title':title})
+    return render(request, 'sdo/all_bills.html', {'bills': bills, 'title':title,'paid':False})
 
 
 @sdo_required
@@ -354,3 +431,146 @@ def delete_consumer(request, pk):
 
     # Redirect to a list or dashboard after deletion
     return redirect('SDO:show_all_consumers') 
+
+@sdo_required
+def generate_monthly_report(request):
+    # Get current month and year
+    today = date.today()
+    month = today.month
+    year = today.year
+
+    # Generate report data
+    total_bills_generated = Bill.objects.filter(billmonth__month=month, billmonth__year=year).count()
+    total_units_consumed = Bill.objects.filter(billmonth__month=month, billmonth__year=year).aggregate(Sum('unitsconsumed'))['unitsconsumed__sum'] or 0
+    total_amount_payable = Bill.objects.filter(billmonth__month=month, billmonth__year=year).aggregate(Sum('payableamount'))['payableamount__sum'] or 0
+    total_amount_paid = Payment.objects.filter(payment_date__month=month, payment_date__year=year).aggregate(Sum('total_amount_paid'))['total_amount_paid__sum'] or 0
+    total_consumers = Consumer.objects.all().count()
+    total_office_staff = User.objects.filter(is_office_staff=True).count()
+    total_meter_readers = User.objects.filter(is_meter_reader=True).count()
+
+    # Create or update the monthly report for the current month
+    monthly_report, created = MonthlyReport.objects.update_or_create(
+        month=month,
+        year=year,
+        defaults={
+            'total_bills_generated': total_bills_generated,
+            'total_units_consumed': total_units_consumed,
+            'total_amount_payable': total_amount_payable,
+            'total_amount_paid': total_amount_paid,
+            'total_consumers': total_consumers,
+            'total_office_staff': total_office_staff,
+            'total_meter_readers': total_meter_readers,
+            # Add other fields as needed
+        }
+    )
+
+    # Render the report template with the generated data
+    return render(request, 'sdo/monthly_report.html', {'monthly_report': monthly_report})
+
+def payment_transactions(request):
+    # Get the month filter from the query parameters
+    month = request.GET.get('month')
+    payments = Payment.objects.all()
+    
+    if month:
+        try:
+            # Parse the month filter into a datetime object
+            date_obj = datetime.strptime(month, "%Y-%m")
+            # Filter payments by the year and month of the payment date
+            payments = payments.filter(payment_date__year=date_obj.year, payment_date__month=date_obj.month)
+        except ValueError:
+            # Handle invalid date format gracefully if necessary
+            pass
+
+    context = {
+        'payments': payments,
+        'month': month,
+    }
+    return render(request, 'sdo/payment_transactions.html', context)
+
+def print_payment_transactions(request):
+    # Same logic as payment_transactions for filtering
+    month = request.GET.get('month')
+    payments = Payment.objects.all()
+    
+    if month:
+        try:
+            date_obj = datetime.strptime(month, "%Y-%m")
+            payments = payments.filter(payment_date__year=date_obj.year, payment_date__month=date_obj.month)
+        except ValueError:
+            pass
+
+    context = {
+        'payments': payments,
+        'month': month,
+    }
+    return render(request, 'sdo/print_transactions.html', context)
+
+def transactions_pdf(request):
+    month = request.GET.get('month')
+    payments = Payment.objects.all()
+    
+    if month:
+        try:
+            date_obj = datetime.strptime(month, "%Y-%m")
+            payments = payments.filter(payment_date__year=date_obj.year, payment_date__month=date_obj.month)
+        except ValueError:
+            pass
+
+    context = {'payments': payments, 'month': month}
+    pdf = render_to_pdf('sdo/print_transactions.html', context)
+    
+    if pdf:
+        response = HttpResponse(pdf, content_type='application/pdf')
+        response['Content-Disposition'] = 'attachment; filename="transactions_report.pdf"'
+        return response
+    return HttpResponse("Error generating PDF", status=500)
+
+def bills_pdf(request, month, paid):
+    # Filter bills based on month and paid status if they are specified
+    bills = Bill.objects.all()
+    
+    if month != "all":
+        bills = bills.filter(billmonth__startswith=month)
+    
+    if paid.lower() == "true":
+        bills = bills.filter(paid=True)
+    elif paid.lower() == "false":
+        bills = bills.filter(paid=False)
+   
+    # Set up template and context
+    template_path = 'sdo/print_all_bills.html'
+    context = {'bills': bills, 'title': f'Bills for {month if month != "all" else "all months"}'}
+
+    # Generate PDF
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="bills_{month}_{paid}.pdf"'
+    template = get_template(template_path)
+    html = template.render(context)
+
+    pisa_status = pisa.CreatePDF(html, dest=response)
+    if pisa_status.err:
+        return HttpResponse('Error generating PDF', status=500)
+
+    return response
+def consumers_pdf(request, division="all"):
+    # Filter consumers based on division if provided
+    if division != "all":
+        consumers = Consumer.objects.filter(consumer_division=division)
+    else:
+        consumers = Consumer.objects.all()
+
+    template_path = 'sdo/print_consumers.html'
+    context = {'consumers': consumers, 'title': 'Consumer List'}
+
+    # Generate PDF
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="consumers_{division}.pdf"'
+    template = get_template(template_path)
+    html = template.render(context)
+
+    pisa_status = pisa.CreatePDF(html, dest=response)
+    if pisa_status.err:
+        return HttpResponse('Error generating PDF', status=500)
+
+    return response

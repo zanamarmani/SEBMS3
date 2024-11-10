@@ -265,23 +265,22 @@ def Generate_bill(request):
         bill_month = reading.reading_date
         average_units = calculate_average_units(meter)
         
-
         # Calculate units consumed
         units_consumed = reading.new_reading - reading.last_reading
-        if not reading.meter_status or units_consumed<10:
+        if not reading.meter_status or units_consumed < 10:
             units_consumed = average_units
             current_bill = calculate_amount_due(average_units, tariff)
         else:
             current_bill = calculate_amount_due(units_consumed, tariff)
-        # Calculate the current bill amount based on units consumed
         
-        payable_after_due_date = current_bill * Decimal('1.1')  # Adding 10% late fee
+        # Calculate payable amount after due date with a 10% late fee
+        payable_after_due_date = current_bill * Decimal('1.1')
 
-        # Calculate arrears from unpaid bills
+        # Retrieve and sum unpaid bills to calculate arrears
         previous_unpaid_bills = Bill.objects.filter(meter=meter, paid=False)
         total_arrears = sum(bill.payableamount for bill in previous_unpaid_bills)
 
-        # Calculate the gross total payable amount (current payable + arrears)
+        # Calculate the gross total payable amount (current bill + arrears)
         gross_total = current_bill + total_arrears
 
         # Create a new Bill object
@@ -292,12 +291,12 @@ def Generate_bill(request):
             averageunit=average_units,
             units=units_consumed,
             unitsconsumed=units_consumed,
-            current_bill = current_bill,
+            current_bill=current_bill,
             payableamount=gross_total,  # Gross total including arrears
-            payable_after_due_date=payable_after_due_date,  
+            payable_after_due_date=payable_after_due_date,
             meter=meter,
             arrears=total_arrears,  # Track the arrears on the bill
-            gross_total = gross_total,
+            gross_total=gross_total,
             paid=False
         )
 
@@ -318,7 +317,7 @@ def Generate_bill(request):
             'gross_total': gross_total,
             'arrears': total_arrears,
             'bill_id': bill.id,
-            'current_bill':current_bill,
+            'current_bill': current_bill,
         })
 
     # Fetch all bills to render in the template
@@ -500,3 +499,14 @@ def consumer_profile(request, consumer_id):
     meter = Meter.objects.filter(consumer=consumer).first()
     
     return render(request, 'consumer_profile.html', {'bill': bill,'consumer': consumer, 'meter':meter})
+
+def view_bill_details(request,bill_id): 
+    try:
+        bill = Bill.objects.filter(id=bill_id).first()
+        reading = MeterReading.objects.filter(meter=current_bill.meter).latest('reading_date')
+    except Bill.DoesNotExist:
+        messages.error(request, 'No current unpaid bill found')
+        current_bill = None
+        reading = None  # Ensure reading is None if no bill found
+    
+    return render(request, 'consumer/show_bill.html', {'current_bill': bill, 'meter_reading': reading})

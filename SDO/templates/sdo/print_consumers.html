@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ title }}</title>
+    <style>
+        /* Your existing styles here */
+    </style>
+</head>
+<body>
+    <h1>{{ title }}</h1>
+
+    <!-- Filter Form (for user convenience before download) -->
+    <form method="get" action="">
+        <label for="division">Division:</label>
+        <select name="division" id="division">
+            <option value="">All Divisions</option>
+            <option value="division1" {% if request.GET.division == 'division1' %}selected{% endif %}>Division 1</option>
+            <option value="division2" {% if request.GET.division == 'division2' %}selected{% endif %}>Division 2</option>
+            <option value="division3" {% if request.GET.division == 'division3' %}selected{% endif %}>Division 3</option>
+        </select>
+        <button type="submit">Filter</button>
+    </form>
+
+    <!-- Table for Consumers -->
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Consumer Number</th>
+                <th>Division</th>
+                <th>Tariff</th>
+                <th>Approved</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for consumer in consumers %}
+                <tr>
+                    <td>{{ consumer.id }}</td>
+                    <td>{{ consumer.consumer_name }}</td>
+                    <td>{{ consumer.consumer_number }}</td>
+                    <td>{{ consumer.consumer_division }}</td>
+                    <td>{{ consumer.consumer_tariff }}</td>
+                    <td>{{ consumer.approved|yesno:"Approved,Pending" }}</td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="6">No consumers found for the selected division.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

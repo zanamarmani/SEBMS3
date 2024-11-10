@@ -10,7 +10,23 @@
                 <div class="col-auto">
                     <h1 class="app-page-title mb-0">{{title}}</h1>
                 </div>
-
+                <form method="GET" action="">
+                    <div class="row mb-3">
+                        <div class="col">
+                            <input type="text" name="consumer_number" class="form-control" placeholder="Consumer Number" value="{{ request.GET.consumer_number }}">
+                        </div>
+                        <div class="col">
+                            <input type="text" name="meter_number" class="form-control" placeholder="Meter Number" value="{{ request.GET.meter_number }}">
+                        </div>
+                        <div class="col">
+                            <input type="month" name="month" class="form-control" placeholder="Month" value="{{ request.GET.month }}">
+                        </div>
+                        <div class="col">
+                            <button type="submit" class="btn btn-primary">Filter</button>
+                        </div>
+                    </div>
+                </form>
+                <a id="download-link" href="{% url 'SDO:bills_pdf' month=request.GET.month|default:'all' paid=paid|default:'all' %}" class="btn btn-secondary" style="margin-top:10px;">Download Bills PDF</a>
                 <div class="tab-content" id="orders-table-tab-content">
                     <div class="tab-pane fade show active" id="orders-all" role="tabpanel" aria-labelledby="orders-all-tab">
                         <div class="app-card app-card-orders-table shadow-sm mb-5">
@@ -21,6 +37,7 @@
                                             <tr class="table-header">
 												<th>Bill ID</th>
 												<th>Consumer No</th>
+                                                <th>Meter Number</th>
 												<th>Amount</th>
 												<th>Bill Month</th>
 												<th>Bill Status</th>
@@ -32,6 +49,7 @@
 											<tr class="table-row ">
 												<td>{{ bill.id }}</td>
 												<td>{{ bill.meter.consumer.consumer_number }}</td>
+                                                <td>{{bill.meter.meter_number}}</td>
 												<td>{{ bill.payableamount }}</td>
 												<td>{{bill.billmonth}}</td>
 												<td>{%if bill.paid%} Paid {% else %}Unpaid {% endif %}</td>

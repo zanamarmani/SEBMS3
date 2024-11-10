@@ -7,6 +7,15 @@ from collections import defaultdict
 import calendar
 from django.utils import timezone
 from payment.models import Payment
+from datetime import datetime
+from django.db.models import Count, Q
+from django.db.models.functions import TruncMonth
+
+from io import BytesIO
+from django.http import HttpResponse
+from django.template.loader import get_template
+from xhtml2pdf import pisa
+
 def calculate_bill(consumed_units, tariff):
     # Check if a valid tariff exists
     if not tariff:
@@ -51,34 +60,43 @@ def bills_data(request):
 
 
 def line_chart(request):
-    # Initialize dictionaries to store monthly totals
-    total_bills_dict = defaultdict(float)
-    paid_bills_dict = defaultdict(float)
+    # Initialize dictionaries to store monthly bill counts
+    total_bills_dict = defaultdict(int)
+    paid_bills_dict = defaultdict(int)
+    unpaid_bills_dict = defaultdict(int)
     
     # Query all bills and group by month
     bills = Bill.objects.all()
     
     for bill in bills:
+        if not bill.billmonth:
+            continue  # Skip bills without a bill month
+        
         month_name = DateFormat(bill.billmonth).format('F')  # Convert to month name
+        total_bills_dict[month_name] += 1  # Increment count for total bills
         
-        # Convert Decimal to float and sum up total bill amounts by month
-        total_bills_dict[month_name] += float(bill.payableamount) if bill.payableamount else 0
-        
-        # Convert Decimal to float and sum up only paid bill amounts by month
         if bill.paid:
-            paid_bills_dict[month_name] += float(bill.payableamount) if bill.payableamount else 0
+            paid_bills_dict[month_name] += 1  # Increment count for paid bills
+        else:
+            unpaid_bills_dict[month_name] += 1  # Increment count for unpaid bills
     
     # Ensure all months are included, even with zero values
     labels = [calendar.month_name[i] for i in range(1, 13)]
     total_bills = [total_bills_dict[month] for month in labels]
     paid_bills = [paid_bills_dict[month] for month in labels]
-
+    unpaid_bills = [unpaid_bills_dict[month] for month in labels]
+    
+    # Debugging: Print the data to console (optional)
+    print("Total Bills:", total_bills)
+    print("Paid Bills:", paid_bills)
+    print("Unpaid Bills:", unpaid_bills)
+    
     return JsonResponse({
         'labels': labels,
         'total_bills': total_bills,
         'paid_bills': paid_bills,
+        'unpaid_bills': unpaid_bills,
     })
-
 def bill_progress_view(request):
     # Assuming you have data for total bills, paid, and unpaid bills
     total_bills = Bill.objects.all().count()
@@ -95,33 +113,63 @@ def bill_progress_view(request):
 
 
 def payment_data(request):
-    # Current year for filtering
+    # Get the current year for filtering
     current_year = timezone.now().year
     
-    # Monthly payments for the current year
-    monthly_payments = []
+    # Initialize monthly totals
+    monthly_totals = []
+    monthly_paid_totals = []
+    monthly_unpaid_totals = []
+
+    # Loop through each month to calculate totals
     for month in range(1, 13):
+        # Total amount (paid + unpaid) for the month
         month_total = Payment.objects.filter(
             payment_date__year=current_year,
             payment_date__month=month
         ).aggregate(total=Sum('total_amount_paid'))['total'] or 0
-        monthly_payments.append(month_total)
-    
-    # Yearly payments over the past 5 years
-    yearly_payments = []
-    for year in range(current_year - 4, current_year + 1):
-        year_total = Payment.objects.filter(
-            payment_date__year=year
+
+        # Paid amount for the month
+        month_paid_total = Payment.objects.filter(
+            payment_date__year=current_year,
+            payment_date__month=month,
+            bill__paid=True  # assuming the Bill model has a 'paid' boolean field
         ).aggregate(total=Sum('total_amount_paid'))['total'] or 0
-        yearly_payments.append({
-            'year': year,
-            'total': year_total
-        })
+
+        # Unpaid amount for the month
+        month_unpaid_total = month_total - month_paid_total
+
+        # Append data to lists
+        monthly_totals.append(month_total)
+        monthly_paid_totals.append(month_paid_total)
+        monthly_unpaid_totals.append(month_unpaid_total)
     
+    # Yearly totals
+    yearly_total = sum(monthly_totals)
+    yearly_paid_total = sum(monthly_paid_totals)
+    yearly_unpaid_total = sum(monthly_unpaid_totals)
+
     # Prepare data for JSON response
     data = {
-        'monthly_payments': monthly_payments,
-        'yearly_payments': yearly_payments,
-        'months': [calendar.month_name[month] for month in range(1, 13)]
+        'months': [calendar.month_name[month] for month in range(1, 13)],
+        'monthly_totals': monthly_totals,
+        'monthly_paid_totals': monthly_paid_totals,
+        'monthly_unpaid_totals': monthly_unpaid_totals,
+        'yearly_total': yearly_total,
+        'yearly_paid_total': yearly_paid_total,
+        'yearly_unpaid_total': yearly_unpaid_total,
     }
+    
     return JsonResponse(data)
+
+
+
+def render_to_pdf(template_src, context_dict={}):
+    template = get_template(template_src)
+    html = template.render(context_dict)
+    result = BytesIO()
+    pdf = pisa.pisaDocument(BytesIO(html.encode("UTF-8")), result)
+    
+    if not pdf.err:
+        return HttpResponse(result.getvalue(), content_type='application/pdf')
+    return None

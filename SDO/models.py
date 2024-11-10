@@ -2,6 +2,7 @@
 
 from django.db import models
 from users.models import User
+from decimal import Decimal
 class Tariff(models.Model):
     # Define the different types of tariffs
     TARIFF_CHOICES = [
@@ -34,3 +35,24 @@ class sdo_profile(models.Model):
     def __str__(self):
         return f'SDO: {self.first_name} {self.last_name}'
 
+
+
+
+class MonthlyReport(models.Model):
+    month = models.PositiveIntegerField(default=None)
+    year = models.PositiveIntegerField(default=None, null=True)
+    total_bills_generated = models.PositiveIntegerField(default=0)
+    total_units_consumed = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
+    total_amount_payable = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
+    total_amount_paid = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
+    total_consumers = models.IntegerField(default=0)
+    total_office_staff = models.IntegerField(default=0)
+    total_meter_readers = models.IntegerField(default=0)
+    total_meter_assigned = models.IntegerField(default=0)
+    # Add other fields as needed
+
+    class Meta:
+        unique_together = ('month', 'year')
+
+    def __str__(self):
+        return f"Report for {self.month}/{self.year}"

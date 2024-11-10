@@ -69,15 +69,20 @@
     });
 </script>
 
+<script src="{% static 'js/chart.min.js' %}"></script>
+
+<script src="{% static 'js/chart.min.js' %}"></script>
+
 <script>
     window.chartColors = {
         green: '#75c181',
         gray: '#a9b5c9',
+        red: '#f57c7c',  // Color for Unpaid Bills
     };
 
-    // Fetch line chart data from the line_chart_data view
+    // Fetch line chart data from the line_chart view
     function fetchLineChartData() {
-        return fetch('{% url "SDO:line_chart_data" %}')
+        return fetch('{% url "SDO:line_chart" %}')
             .then(response => response.json())
             .catch(error => console.error('Error fetching line chart data:', error));
     }
@@ -96,6 +101,8 @@
                         borderColor: window.chartColors.green,
                         data: data.total_bills,
                         fill: false,
+                        tension: 0.4,  // Smooth curves
+                        borderWidth: 2,
                     },
                     {
                         label: 'Paid Bills',
@@ -103,15 +110,52 @@
                         borderColor: window.chartColors.gray,
                         data: data.paid_bills,
                         fill: false,
+                        tension: 0.4,  // Smooth curves
+                        borderWidth: 2,
+                    },
+                    {
+                        label: 'Unpaid Bills',
+                        backgroundColor: window.chartColors.red,
+                        borderColor: window.chartColors.red,
+                        data: data.unpaid_bills,
+                        fill: false,
+                        tension: 0.4,  // Smooth curves
+                        borderWidth: 2,
                     }
                 ]
             },
             options: {
                 responsive: true,
                 scales: {
-                    x: { display: true },
-                    y: { display: true }
-                }
+                    x: { 
+                        display: true,
+                        title: {
+                            display: true,
+                            text: 'Month'
+                        }
+                    },
+                    y: { 
+                        display: true,
+                        beginAtZero: true,  // Ensure y-axis starts at zero
+                        title: {
+                            display: true,
+                            text: 'Number of Bills'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top',
+                    },
+                    tooltip: {
+                        enabled: true,
+                    },
+                },
+                interaction: {
+                    mode: 'index',
+                    intersect: false,
+                },
             }
         });
     }
@@ -119,10 +163,12 @@
     // Load the chart data after the page loads
     window.addEventListener('load', function() {
         fetchLineChartData().then(data => {
+            console.log("Chart Data:", data);  // Debug: Check data in console
             createLineChart(data);
         });
     });
 </script>
+
 
 <script>
 window.addEventListener('load', function() {
@@ -224,6 +270,128 @@ window.addEventListener('load', function() {
     });
     </script>
     
+    <script>
+        // Colors for the chart
+        window.chartColors = {
+            green: '#75c181',
+            gray: '#a9b5c9',
+            red: '#f57c7c',
+        };
+    
+        // Fetch payment data from the Django view
+        function fetchPaymentData() {
+            return fetch('{% url "SDO:payment_data" %}')
+                .then(response => response.json())
+                .catch(error => console.error('Error fetching payment data:', error));
+        }
+    
+        // Create the line chart
+        function createPaymentLineChart(data) {
+            var ctx = document.getElementById('paymentLineChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.months,
+                    datasets: [
+                        {
+                            label: 'Total Amount',
+                            backgroundColor: window.chartColors.green,
+                            borderColor: window.chartColors.green,
+                            data: data.monthly_totals,
+                            fill: false,
+                            tension: 0.4,
+                            borderWidth: 2,
+                        },
+                        {
+                            label: 'Paid Amount',
+                            backgroundColor: window.chartColors.gray,
+                            borderColor: window.chartColors.gray,
+                            data: data.monthly_paid_totals,
+                            fill: false,
+                            tension: 0.4,
+                            borderWidth: 2,
+                        },
+                        {
+                            label: 'Unpaid Amount',
+                            backgroundColor: window.chartColors.red,
+                            borderColor: window.chartColors.red,
+                            data: data.monthly_unpaid_totals,
+                            fill: false,
+                            tension: 0.4,
+                            borderWidth: 2,
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            display: true,
+                            title: {
+                                display: true,
+                                text: 'Month'
+                            }
+                        },
+                        y: {
+                            display: true,
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Amount (Rupees)'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top',
+                        },
+                        tooltip: {
+                            enabled: true,
+                        },
+                    },
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                }
+            });
+        }
+    
+        // Populate summary boxes with yearly totals
+        function populateSummaryBoxes(data) {
+            document.getElementById('yearly-total').textContent = 'Rs. ' + data.yearly_total.toLocaleString();
+            document.getElementById('yearly-paid-total').textContent = 'Rs. ' + data.yearly_paid_total.toLocaleString();
+            document.getElementById('yearly-unpaid-total').textContent = 'Rs. ' + data.yearly_unpaid_total.toLocaleString();
+        }
+    
+        // Load the chart data and summary boxes after the page loads
+        window.addEventListener('load', function() {
+            fetchPaymentData().then(data => {
+                createPaymentLineChart(data);
+                populateSummaryBoxes(data);
+            });
+        });
+    </script> 
+
+    <script>
+        // JavaScript to update the download link based on selected division
+        document.getElementById('consumer_division').addEventListener('change', function () {
+            const division = this.value || 'all';  // If no division selected, default to 'all'
+            const downloadLink = document.getElementById('download-link');
+            downloadLink.href = "{% url 'SDO:consumers_pdf' 'all' %}" + division + '/';
+        });
+    </script>
+    <script>
+        // JavaScript to update the download link based on selected month
+        document.getElementById('month').addEventListener('change', function () {
+            const month = this.value || 'all';  // Use 'all' if no month is selected
+            const downloadLink = document.getElementById('download-link');
+            downloadLink.href = "{% url 'SDO:bills_pdf' 'all' 'all' %}"
+            .replace('all', month)
+            .replace('all', paidStatus);
+        });
+    </script>
 </body>
 
 </html>

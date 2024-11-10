@@ -90,7 +90,7 @@ def payment_success(request):
                     bill=bill,
                     bank_charges=0.00,
                     arrears_charges=0.00,
-                    total_amount_paid=amount,
+                    total_amount_paid=amount*100,
                     txn_id=txn_ref
                 )
 
